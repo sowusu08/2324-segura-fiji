@@ -4,3 +4,9 @@ output: html_document
 date: "2023-03-29"
 ---
 
+### load libraries
+```{r, load}
+library(tidyverse)
+library(dplyr)
+```
+
