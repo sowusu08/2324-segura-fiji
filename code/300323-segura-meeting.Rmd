@@ -251,7 +251,13 @@ ggsave("avg-dermis-pixel-length-by-animal.jpg", plot = p2, dpi = 300, width = 6,
 ```
 
 
+### save blinded average pixel length df's for epidermis and dermis
+```{r, save-blind-avg-pixel-dermis-and-epidermis-dfs}
+## ONLY RUN IF DATAFRAMS NOT ALREADY SAVED!
 
+write.csv(df1, file=paste0("../data/","blind_avg_epidermis_lengths_in_pixels.csv"))
+write.csv(df2, file=paste0("../data/","blind_avg_dermis_lengths_in_pixels.csv"))
+```
 
 
 
