@@ -267,7 +267,7 @@ add_identity_unblind_column <- function(df) {
   # Define a lookup table of filename prefixes and corresponding identity_unblind values
   prefixes <- c("Animal_A" = "Exp17_Racemic-MAP_POD7_Mouse14",
                 "Animal_C" = "Exp16_D-MAP_POD4_Mouse3",
-                "Animal_D" = "Exp15_L-MAP_Mouse3",
+                "Animal_D" = "Exp15_L-MAP_Mouse3_POD4",
                 "Animal_E" = "Exp14_No-MAP_POD7_Mouse11",
                 "Animal_F" = "Exp17_Racemic-MAP_POD7_Mouse11",
                 "Animal_G" = "Unmanipulated_PepB",
@@ -283,19 +283,19 @@ add_identity_unblind_column <- function(df) {
                 "Animal_V" = "Unmanip_B6",
                 "Animal_W" = "Exp17_Racemic-MAP_POD7_Mouse12",
                 "Animal_X" = "Exp14_No-MAP_POD4_Mouse2",
-                "Animal_Y" = "Exp16_D-MAP_POD7_Mouse11",
+                #"Animal_Y" = "Exp16_D-MAP_POD7_Mouse11",
                 "Animal_Z" = "UnmanipB6",
                 "Animal_Z1" = "Exp17_Racemic-MAP_POD4_Mouse1",
-                "Animal_Z2" = "Exp14_POD7_Mouse14",
-                "Animal_Z3" = "Exp15_Mouse12_POD7_LMAP",
+                "Animal_Z2" = "Exp14_POD7_Mouse14_No-MAP",
+                #"Animal_Z3" = "Exp15_Mouse12_POD7_LMAP",
                 "Animal_Z4" = "Exp15_POD4_Mouse1",
-                "Animal_B" = "",
-                "Animal_P" = "",
-                "Animal_R" = "",
-                "Animal_Z6" = "",
-                "Animal_Z8" = "",
-                "Animal_Z9" = "",
-                "Animal_Z10" = "")
+                "Animal_B" = "Exp15_POD7_Mouse11_L-MAP",
+                "Animal_P" = "Exp14_POD7_Mouse13_D-MAP",
+                #"Animal_R" = "Exp16_POD7_Mouse2_D-MAP",
+                "Animal_Z6" = "Exp16_POD7_Mouse11_D-MAP",
+                "Animal_Z8" = "Exp16_POD4_Mouse2_D-MAP",
+                "Animal_Z9" = "Exp17_POD4_Mouse3_Racemic-MAP",
+                "Animal_Z10" = "Exp16_POD4_Mouse1_D-MAP")
   
   # Use sapply to look up the identity_unblind value for each filename in the dataframe
   df$identity_unblind <- sapply(df$filename, function(x) {
