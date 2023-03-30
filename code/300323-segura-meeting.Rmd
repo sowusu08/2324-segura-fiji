@@ -366,32 +366,30 @@ p5<-"Racemic-MAP"
 # for epiderm
 
 # deal with different lengths
-epidermal_thickness_prismDf<-create_dataframe((filter_data_by_phrase(unblind_all_epidermis_in_pixels_AVG, p1))$average,
+all_epidermal_pixel_thickness_prismDf<-create_dataframe((filter_data_by_phrase(unblind_all_epidermis_in_pixels_AVG, p1))$average,
       (filter_data_by_phrase(unblind_all_epidermis_in_pixels_AVG, p2))$average,
       (filter_data_by_phrase(unblind_all_epidermis_in_pixels_AVG, p3))$average,
       (filter_data_by_phrase(unblind_all_epidermis_in_pixels_AVG, p4))$average,
       (filter_data_by_phrase(unblind_all_epidermis_in_pixels_AVG, p5))$average)
-colnames(epidermal_thickness_prismDf) <- c("NonOp", "No MAP", "L-MAP", "D-MAP", "R-MAP")
-# View data so can copy and paste into prism if need be
-View(epidermal_thickness_prismDf)
+colnames(all_epidermal_pixel_thickness_prismDf) <- c("NonOp", "No MAP", "L-MAP", "D-MAP", "R-MAP")
+View(all_epidermal_pixel_thickness_prismDf)
 
 # for derm
-dermal_thickness_prismDf<-create_dataframe((filter_data_by_phrase(unblind_all_dermis_in_pixels_AVG, p1))$average,
+all_dermal_pixel_thickness_prismDf<-create_dataframe((filter_data_by_phrase(unblind_all_dermis_in_pixels_AVG, p1))$average,
       (filter_data_by_phrase(unblind_all_dermis_in_pixels_AVG, p2))$average,
       (filter_data_by_phrase(unblind_all_dermis_in_pixels_AVG, p3))$average,
       (filter_data_by_phrase(unblind_all_dermis_in_pixels_AVG, p4))$average,
       (filter_data_by_phrase(unblind_all_dermis_in_pixels_AVG, p5))$average)
-colnames(dermal_thickness_prismDf) <- c("NonOp", "No MAP", "L-MAP", "D-MAP", "R-MAP")
-# View data so can copy and paste into prism if need be
-View(dermal_thickness_prismDf)
+colnames(all_dermal_pixel_thickness_prismDf) <- c("NonOp", "No MAP", "L-MAP", "D-MAP", "R-MAP")
+View(all_dermal_pixel_thickness_prismDf)
 ```
 
 #### save the prism df's made in the previous chunk
 ```{r, save-prism-dfs}
 # ONLY RUN IF THESE DF's AREN'T ALREADY SAVED!!
-write.csv(epidermal_thickness_prismDf, file=paste0("../data/","epidermal_thickness_pixels_prismDf.csv"))
+write.csv(epidermal_thickness_prismDf, file=paste0("../data/","all_epidermal_pixel_thickness_prismDf.csv"))
 
-write.csv(dermal_thickness_prismDf, file=paste0("../data/","dermal_thickness_pixels_prismDf.csv"))
+write.csv(dermal_thickness_prismDf, file=paste0("../data/","all_dermal_pixel_thickness_prismDf.csv"))
 ```
 
 
