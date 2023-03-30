@@ -259,5 +259,61 @@ write.csv(df1, file=paste0("../data/","blind_avg_epidermis_lengths_in_pixels.csv
 write.csv(df2, file=paste0("../data/","blind_avg_dermis_lengths_in_pixels.csv"))
 ```
 
+### Write funciton to unblind animal identities
+__Question__: What is identity of AnimalD? in terms of post-op day?
+```{r, unblind-fnc}
+add_identity_unblind_column <- function(df) {
+  # Define a lookup table of filename prefixes and corresponding identity_unblind values
+  prefixes <- c("Animal_A" = "Exp17_Racemic-MAP_POD7_Mouse14",
+                "Animal_C" = "Exp16_D-MAP_POD4_Mouse3",
+                "Animal_D" = "Exp15_L-MAP_Mouse3",
+                "Animal_E" = "Exp14_No-MAP_POD7_Mouse11",
+                "Animal_F" = "Exp17_Racemic-MAP_POD7_Mouse11",
+                "Animal_G" = "Unmanipulated_PepB",
+                "Animal_H" = "Exp17_Racemic-MAP_POD4_Mouse2",
+                "Animal_I" = "Exp15_L-MAP_POD7_Mouse13",
+                "Animal_J" = "Exp15_L-MAP_POD4_Mouse2",
+                "Animal_K" = "Exp14_No-MAP_POD4_Mouse4",
+                "Animal_L" = "Exp14_No-MAP_POD7_Mouse12",
+                "Animal_M" = "Exp14_No-MAP_POD4_Mouse3",
+                "Animal_N" = "Unmanip_PepB",
+                "Animal_O" = "Exp17_Racemic-MAP_POD7_Mouse13",
+                "Animal_U" = "Exp14_No-MAP_POD4_Mouse1",
+                "Animal_V" = "Unmanip_B6",
+                "Animal_W" = "Exp17_Racemic-MAP_POD7_Mouse12",
+                "Animal_X" = "Exp14_No-MAP_POD4_Mouse2",
+                "Animal_Y" = "Exp16_D-MAP_POD7_Mouse11",
+                "Animal_Z" = "UnmanipB6",
+                "Animal_Z1" = "Exp17_Racemic-MAP_POD4_Mouse1",
+                "Animal_Z2" = "Exp14_POD7_Mouse14",
+                "Animal_Z3" = "Exp15_Mouse12_POD7_LMAP",
+                "Animal_Z4" = "Exp15_POD4_Mouse1",
+                "Animal_B" = "",
+                "Animal_P" = "",
+                "Animal_R" = "",
+                "Animal_Z6" = "",
+                "Animal_Z8" = "",
+                "Animal_Z9" = "",
+                "Animal_Z10" = "")
+  
+  # Use sapply to look up the identity_unblind value for each filename in the dataframe
+  df$identity_unblind <- sapply(df$filename, function(x) {
+    prefix <- substr(x, 1, 8) # Extract the first 8 characters of the filename
+    prefixes[prefix] # Look up the corresponding identity_unblind value
+  })
+  
+  return(df)
+}
+
+```
+
+### Use previous function to unblind epidermis and dermis df's
+```{r, use-unblind-fnc}
+unblind_all_epidermis_in_pixels_AVG <- add_identity_unblind_column(all_epidermis_in_pixels_AVG)
+
+unblind_all_dermis_in_pixels_AVG <- add_identity_unblind_column(all_dermis_in_pixels_AVG)
+```
+
+
 
 
