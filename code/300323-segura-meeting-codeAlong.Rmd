@@ -1,0 +1,197 @@
+---
+title: "Code-Along"
+output: html_document
+date: "2023-03-30"
+---
+
+THE FOLLOWING SPECIFICALLY LOOKS AT MICRON PIXEL CONVERSION AFTER ...segura-meeting.Rmd has been run
+### load libraries
+```{r, load}
+library(tidyverse)
+library(dplyr)
+
+conversion = 100/22  #write multiplication conversion factor here; currently holds test value
+```
+
+### Read in the epidermis and dermis pixel dataframes 
+skip first column (it is just the number of rows)
+```{r, open-dermis-and-epidermis-dfs}
+all_epidermis <- read_csv(paste0("../data/","all_epidermis_lengths_in_pixels.csv"))
+a<-length(colnames(all_epidermis))
+
+all_dermis <- read_csv(paste0("../data/","all_dermis_lengths_in_pixels.csv"))
+b<-length(colnames(all_dermis))
+
+# skip first column (it is just the number of rows)
+all_epidermis <- all_epidermis[,2:a]
+all_dermis <- all_dermis[,2:b]
+
+# apply conversion
+all_epidermis_micron <- all_epidermis*conversion
+all_dermis_micron <- all_dermis*conversion
+```
+
+### rename epidermis and dermis df for readability
+```{r, load-pixel-epiderm-derm}
+all_dermis_lengths_in_microns <- all_dermis
+all_epidermis_lengths_in_microns <- all_epidermis
+```
+
+### visualize spread of each animal's micrin lengths...
+#### spread of each animal's micron lengths for epidermis
+```{r, spread-epi-pixel}
+df_set1<-all_epidermis_lengths_in_microns[,1:6]
+df_set2<-all_epidermis_lengths_in_microns[,7:12]
+df_set3<-all_epidermis_lengths_in_microns[,13:18]
+df_set4<-all_epidermis_lengths_in_microns[,19:24]
+df_set5<-all_epidermis_lengths_in_microns[,25:length(all_epidermis_lengths_in_microns)]
+
+# convert data to long format using tidyr::pivot_longer()
+long1 <- tidyr::pivot_longer(df_set1, everything())
+long2 <- tidyr::pivot_longer(df_set2, everything())
+long3 <- tidyr::pivot_longer(df_set3, everything())
+long4 <- tidyr::pivot_longer(df_set4, everything())
+long5 <- tidyr::pivot_longer(df_set5, everything())
+
+# plot using ggplot and facet_wrap()
+p1<-ggplot(long1[], aes(x = value)) +
+  geom_histogram(color="black", fill="white") +
+  facet_wrap(~ name, scales = "free") +
+  labs(x = "Micron Value", y = "Frequency")
+p1
+#ggsave("animal-micron-length-spread1.jpg", plot = p1, dpi = 300, width = 6, height = 4, units = "in")
+
+p2<-ggplot(long2[], aes(x = value)) +
+  geom_histogram(color="black", fill="white") +
+  facet_wrap(~ name, scales = "free") +
+  labs(x = "Micron Value", y = "Frequency")
+p2
+#ggsave("animal-micron-length-spread2.jpg", plot = p2, dpi = 300, width = 6, height = 4, units = "in")
+
+p3<-ggplot(long3[], aes(x = value)) +
+  geom_histogram(color="black", fill="white") +
+  facet_wrap(~ name, scales = "free") +
+  labs(x = "Micron Value", y = "Frequency")
+#ggsave("animal-micron-length-spread3.jpg", plot = p3, dpi = 300, width = 6, height = 4, units = "in")
+
+p4<-ggplot(long4[], aes(x = value)) +
+  geom_histogram(color="black", fill="white") +
+  facet_wrap(~ name, scales = "free") +
+  labs(x = "Micron Value", y = "Frequency")
+#ggsave("animal-micron-length-spread4.jpg", plot = p4, dpi = 300, width = 6, height = 4, units = "in")
+
+p5<-ggplot(long5[], aes(x = value)) +
+  geom_histogram(color="black", fill="white") +
+  facet_wrap(~ name, scales = "free") +
+  labs(x = "Micron Value", y = "Frequency")
+#ggsave("animal-micron-length-spread5.jpg", plot = p5, dpi = 300, width = 6, height = 4, units = "in")
+```
+#### spread of each animal's micron lengths for dermis
+```{r, spread-epi-pixel}
+df_set1<-all_dermis_lengths_in_microns[,1:6]
+df_set2<-all_dermis_lengths_in_microns[,7:12]
+df_set3<-all_dermis_lengths_in_microns[,13:18]
+df_set4<-all_dermis_lengths_in_microns[,19:24]
+df_set5<-all_dermis_lengths_in_microns[,25:length(all_dermis_lengths_in_microns)]
+
+# convert data to long format using tidyr::pivot_longer()
+long1 <- tidyr::pivot_longer(df_set1, everything())
+long2 <- tidyr::pivot_longer(df_set2, everything())
+long3 <- tidyr::pivot_longer(df_set3, everything())
+long4 <- tidyr::pivot_longer(df_set4, everything())
+long5 <- tidyr::pivot_longer(df_set5, everything())
+
+# plot using ggplot and facet_wrap()
+p1<-ggplot(long1[], aes(x = value)) +
+  geom_histogram(color="black", fill="white") +
+  facet_wrap(~ name, scales = "free") +
+  labs(x = "Micron Value", y = "Frequency")
+p1
+#ggsave("animal-derm-micron-length-spread1.jpg", plot = p1, dpi = 300, width = 6, height = 4, units = "in")
+
+p2<-ggplot(long2[], aes(x = value)) +
+  geom_histogram(color="black", fill="white") +
+  facet_wrap(~ name, scales = "free") +
+  labs(x = "Micron Value", y = "Frequency")
+p2
+#ggsave("animal-derm-micron-length-spread2.jpg", plot = p2, dpi = 300, width = 6, height = 4, units = "in")
+
+p3<-ggplot(long3[], aes(x = value)) +
+  geom_histogram(color="black", fill="white") +
+  facet_wrap(~ name, scales = "free") +
+  labs(x = "Micron Value", y = "Frequency")
+#ggsave("animal-derm-micron-length-spread3.jpg", plot = p3, dpi = 300, width = 6, height = 4, units = "in")
+
+p4<-ggplot(long4[], aes(x = value)) +
+  geom_histogram(color="black", fill="white") +
+  facet_wrap(~ name, scales = "free") +
+  labs(x = "Micron Value", y = "Frequency")
+#ggsave("animal-derm-micron-length-spread4.jpg", plot = p4, dpi = 300, width = 6, height = 4, units = "in")
+
+p5<-ggplot(long5[], aes(x = value)) +
+  geom_histogram(color="black", fill="white") +
+  facet_wrap(~ name, scales = "free") +
+  labs(x = "Micron Value", y = "Frequency")
+#ggsave("animal-derm-micron-length-spread5.jpg", plot = p5, dpi = 300, width = 6, height = 4, units = "in")
+```
+
+### Write function to calculate average length for each column in epidermis and dermis dfs (aka each animal)
+```{r, fnc-to-calcualte-averages}
+# Define a function to calculate column-wise averages
+calculate_averages <- function(data) {
+  # Calculate column-wise averages using colMeans() function
+  avg <- colMeans(data, na.rm = TRUE)
+  
+  # Create a new dataframe to store the column-wise averages
+  avg_df <- data.frame(column = names(data), average = avg)
+  
+  # Return the new dataframe
+  return(avg_df)
+}
+
+# The calculate_averages() function takes one argument data, which is the dataframe for which we want to calculate the column-wise averages.
+# 
+# The colMeans() function is used to calculate the column-wise averages of the dataframe. The na.rm = TRUE argument specifies that missing values should be removed before calculating the averages.
+# 
+# We then create a new dataframe avg_df to store the column names and their respective averages. The data.frame() function is used to create the new dataframe with two columns: "column" for the column names, and "average" for the column-wise averages.
+# 
+# Finally, we return the new dataframe avg_df from the function.
+```
+
+### Use previous function to create dataframes with averages for epidermis and dermis df's
+```{r, calc-averages}
+# Call the calculate_averages() function to calculate the column-wise averages
+all_epidermis_in_microns_AVG <- calculate_averages(all_epidermis_lengths_in_microns)
+colnames(all_epidermis_in_microns_AVG)<-c("filename", "average")
+rownames(all_epidermis_in_microns_AVG)<-c(1:length(rownames(all_epidermis_in_microns_AVG)))
+
+all_dermis_in_microns_AVG <- calculate_averages(all_dermis_lengths_in_microns)
+colnames(all_dermis_in_microns_AVG)<-c("filename", "average")
+rownames(all_dermis_in_microns_AVG)<-c(1:length(rownames(all_dermis_in_microns_AVG)))
+```
+
+### Visualize average micron lengths (per animal) for epidermis/dermis 
+Use bar chart
+```{r, viz-animal-pixel-averages}
+categories <- c(letters[1:16], "r", "u", "v", "w", "x", "y", "z", "z1", "z10", "z2", "z4", "z6", "z8", "z9")
+
+# for epidermis
+df1<- cbind(all_epidermis_in_microns_AVG, categories)
+p1<-ggplot(df1, aes(x = categories, y = all_epidermis_in_microns_AVG[,2])) +
+  geom_bar(stat = "identity", color="black", fill="white") +
+  xlab("Animal") +
+  ylab("Average Length of Epidermis in microns")
+p1
+
+#ggsave("avg-epidermis-micron-length-by-animal.jpg", plot = p1, dpi = 300, width = 6, height = 4, units = "in")
+
+# for dermis
+df2<- cbind(all_dermis_in_microns_AVG, categories)
+p2<-ggplot(df2, aes(x = categories, y = all_dermis_in_microns_AVG[,2])) +
+  geom_bar(stat = "identity", color="black", fill="white") +
+  xlab("Animal") +
+  ylab("Average Length of Dermis in microns")
+p2
+
+#ggsave("avg-dermis-micron-length-by-animal.jpg", plot = p2, dpi = 300, width = 6, height = 4, units = "in")
+```
