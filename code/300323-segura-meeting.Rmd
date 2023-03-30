@@ -355,7 +355,7 @@ create_dataframe <- function(vec1, vec2, vec3, vec4, vec5) {
 
 ```
 
-#### Use the previous two functions to filter data for prism
+#### Use the previous two functions to filter data for prism part 1
 ```{r, use-filter-prism-fnc}
 p1<- "Unmanip"
 p2<-"No-MAP"
@@ -392,4 +392,102 @@ write.csv(epidermal_thickness_prismDf, file=paste0("../data/","all_epidermal_pix
 write.csv(dermal_thickness_prismDf, file=paste0("../data/","all_dermal_pixel_thickness_prismDf.csv"))
 ```
 
+#### export to github for prism part 1
+Run the following in terminal
+git add ../data/all_epidermal_pixel_thickness_prismDf.csv 
+git add ../data/all_dermal_pixel_thickness_prismDf.csv 
+git commit -m "add prism part1 file"
+git push
 
+Then go to github and copy paste into excel
+Then copy and past into prism
+
+
+#### Use the previous two functions to filter data for prism part 2 (POD4 & POD7)
+When copyign and pasting remember to exclude 1st column which is placeholder repeat
+```{r, use-filter-prism-fnc}
+p2<-"No-MAP"
+p3<-"L-MAP"
+p4<-"D-MAP"
+p5<-"Racemic-MAP"
+
+# POD4----------------------
+# for epiderm
+#first filter by pod4
+df1<-filter_data_by_phrase(unblind_all_epidermis_in_pixels_AVG, "POD4")
+
+# deal with different lengths
+pod4_epidermal_pixel_thickness_prismDf<-create_dataframe(
+      c(NA),
+      (filter_data_by_phrase(df1, p2))$average,
+      (filter_data_by_phrase(df1, p3))$average,
+      (filter_data_by_phrase(df1, p4))$average,
+      (filter_data_by_phrase(df1, p5))$average)
+colnames(pod4_epidermal_pixel_thickness_prismDf) <- c("don't copy this column","No MAP", "L-MAP", "D-MAP", "R-MAP")
+View(pod4_epidermal_pixel_thickness_prismDf)
+
+# for derm
+#first filter by pod4
+df2<-filter_data_by_phrase(unblind_all_dermis_in_pixels_AVG, "POD4")
+
+# deal with different lengths
+pod4_dermal_pixel_thickness_prismDf<-create_dataframe(
+      c(NA),
+      (filter_data_by_phrase(df2, p2))$average,
+      (filter_data_by_phrase(df2, p3))$average,
+      (filter_data_by_phrase(df2, p4))$average,
+      (filter_data_by_phrase(df2, p5))$average)
+colnames(pod4_dermal_pixel_thickness_prismDf) <- c("don't copy this column", "No MAP", "L-MAP", "D-MAP", "R-MAP")
+View(pod4_dermal_pixel_thickness_prismDf)
+
+# POD7----------------------
+# for epiderm
+#first filter by pod4
+df1<-filter_data_by_phrase(unblind_all_epidermis_in_pixels_AVG, "POD7")
+
+# deal with different lengths
+pod7_epidermal_pixel_thickness_prismDf<-create_dataframe(
+      c(NA),    
+      (filter_data_by_phrase(df1, p2))$average,
+      (filter_data_by_phrase(df1, p3))$average,
+      (filter_data_by_phrase(df1, p4))$average,
+      (filter_data_by_phrase(df1, p5))$average)
+colnames(pod7_epidermal_pixel_thickness_prismDf) <- c("don't copy this column","No MAP", "L-MAP", "D-MAP", "R-MAP")
+View(pod7_epidermal_pixel_thickness_prismDf)
+
+# for derm
+#first filter by pod4
+df2<-filter_data_by_phrase(unblind_all_dermis_in_pixels_AVG, "POD7")
+
+# deal with different lengths
+pod7_dermal_pixel_thickness_prismDf<-create_dataframe(
+      c(NA),    
+      (filter_data_by_phrase(df2, p2))$average,
+      (filter_data_by_phrase(df2, p3))$average,
+      (filter_data_by_phrase(df2, p4))$average,
+      (filter_data_by_phrase(df2, p5))$average)
+colnames(pod7_dermal_pixel_thickness_prismDf) <- c("don't copy this column","No MAP", "L-MAP", "D-MAP", "R-MAP")
+View(pod7_dermal_pixel_thickness_prismDf)
+```
+
+#### save the prism df's made in the previous chunk
+```{r, save-prism-dfs}
+# ONLY RUN IF THESE DF's AREN'T ALREADY SAVED!!
+write.csv(pod4_epidermal_pixel_thickness_prismDf, file=paste0("../data/","pod4_epidermal_pixel_thickness_prismDf.csv"))
+write.csv(pod4_dermal_pixel_thickness_prismDf, file=paste0("../data/","pod4_dermal_pixel_thickness_prismDf.csv"))
+
+write.csv(pod7_epidermal_pixel_thickness_prismDf, file=paste0("../data/","pod7_epidermal_pixel_thickness_prismDf.csv"))
+write.csv(pod7_dermal_pixel_thickness_prismDf, file=paste0("../data/","pod7_dermal_pixel_thickness_prismDf.csv"))
+```
+
+#### export to github for prism part 2
+Run the following in terminal
+git add ../data/pod4_epidermal_pixel_thickness_prismDf.csv 
+git add ../data/pod4_dermal_pixel_thickness_prismDf.csv 
+git add ../data/pod7_epidermal_pixel_thickness_prismDf.csv
+git add ../data/pod7_dermal_pixel_thickness_prismDf.csv 
+git commit -m "add prism part2 file"
+git push
+
+Then go to github and copy paste into excel
+Then copy and past into prism
