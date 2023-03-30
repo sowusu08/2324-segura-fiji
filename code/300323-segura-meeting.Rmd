@@ -17,7 +17,7 @@ library(dplyr)
 # set working directory to folder containing txt files
 collect_data <- function(path_to_folder_with_txts_as_string, file_name, type="txt"){
   # set your working directory to the folder where your txt files are located
-#setwd(path_to_folder_with_txts_as_string)
+setwd(path_to_folder_with_txts_as_string)
 
 # create a list of all the txt files in the folder
 txt_files <- list.files(pattern = "\\.txt$")
@@ -53,10 +53,12 @@ combined_df
 
 #This code assumes that all of the txt files have the same structure and that they all have headers. 
 
+
+
 ```
 
 ### Collect micron epidermis and dermis pixel (unaltered) data into two dataframes
-```{r, use-collect-data-fucntion}
+```{r, use-collect-data-function-epidermis, warning=FALSE}
 # collect all epidermis data
   # set path
 path_to_folder <- "../data/Epidermal-thickness-prism"
@@ -64,8 +66,9 @@ path_to_folder <- "../data/Epidermal-thickness-prism"
 list.files(path_to_folder)
 
 all_epidermis<-collect_data(path_to_folder)
+```
 
-
+```{r, use-collect-data-function-dermis, warning=FALSE}
 # collect all dermis data
 path_to_folder2 <- "../data/Dermal-thickness-prism"
   #check path
@@ -74,10 +77,115 @@ list.files(path_to_folder2)
 all_dermis<-collect_data(path_to_folder2)
 ```
 
-### Save the epidermis and dermis pixel dataframes 
+### Save the epidermis and dermis pixel dataframes as csv files
 ```{r, save-dermis-and-epidermis-dfs}
 ## ONLY RUN IF DATAFRAMS NOT ALREADY SAVED!
 
 write.csv(all_epidermis, file=paste0("../data/","all_epidermis_lengths_in_pixels.csv"))
 write.csv(all_dermis, file=paste0("../data/","all_dermis_lengths_in_pixels.csv"))
 ```
+
+### rename epidermis and dermis df for readability
+```{r, load-pixel-epiderm-derm}
+all_dermis_lengths_in_pixels <- all_dermis
+all_epidermis_lengths_in_pixels <- all_epidermis
+```
+
+### visualize spread of each animal's pixel lengths...
+#### spread of each animal's pixel lengths for epidermis
+```{r, spread-epi-pixel}
+df_set1<-all_epidermis_lengths_in_pixels[,1:6]
+df_set2<-all_epidermis_lengths_in_pixels[,7:12]
+df_set3<-all_epidermis_lengths_in_pixels[,13:18]
+df_set4<-all_epidermis_lengths_in_pixels[,19:24]
+df_set5<-all_epidermis_lengths_in_pixels[,25:30]
+
+# convert data to long format using tidyr::pivot_longer()
+long1 <- tidyr::pivot_longer(df_set1, everything())
+long2 <- tidyr::pivot_longer(df_set2, everything())
+long3 <- tidyr::pivot_longer(df_set3, everything())
+long4 <- tidyr::pivot_longer(df_set4, everything())
+long5 <- tidyr::pivot_longer(df_set5, everything())
+
+# plot using ggplot and facet_wrap()
+p1<-ggplot(long1[], aes(x = value)) +
+  geom_histogram(color="black", fill="white") +
+  facet_wrap(~ name, scales = "free") +
+  labs(x = "Pixel Value", y = "Frequency")
+p1
+ggsave("animal-pixel-lenght-spread1.jpg", plot = p1, dpi = 300, width = 6, height = 4, units = "in")
+
+p2<-ggplot(long2[], aes(x = value)) +
+  geom_histogram(color="black", fill="white") +
+  facet_wrap(~ name, scales = "free") +
+  labs(x = "Pixel Value", y = "Frequency")
+p2
+ggsave("animal-pixel-lenght-spread2.jpg", plot = p2, dpi = 300, width = 6, height = 4, units = "in")
+
+p3<-ggplot(long3[], aes(x = value)) +
+  geom_histogram(color="black", fill="white") +
+  facet_wrap(~ name, scales = "free") +
+  labs(x = "Pixel Value", y = "Frequency")
+ggsave("animal-pixel-lenght-spread3.jpg", plot = p3, dpi = 300, width = 6, height = 4, units = "in")
+
+p4<-ggplot(long4[], aes(x = value)) +
+  geom_histogram(color="black", fill="white") +
+  facet_wrap(~ name, scales = "free") +
+  labs(x = "Pixel Value", y = "Frequency")
+ggsave("animal-pixel-lenght-spread4.jpg", plot = p4, dpi = 300, width = 6, height = 4, units = "in")
+
+p5<-ggplot(long5[], aes(x = value)) +
+  geom_histogram(color="black", fill="white") +
+  facet_wrap(~ name, scales = "free") +
+  labs(x = "Pixel Value", y = "Frequency")
+ggsave("animal-pixel-lenght-spread5.jpg", plot = p5, dpi = 300, width = 6, height = 4, units = "in")
+```
+#### spread of each animal's pixel lengths for dermis
+```{r, spread-epi-pixel}
+df_set1<-all_dermis_lengths_in_pixels[,1:6]
+df_set2<-all_dermis_lengths_in_pixels[,7:12]
+df_set3<-all_dermis_lengths_in_pixels[,13:18]
+df_set4<-all_dermis_lengths_in_pixels[,19:24]
+df_set5<-all_dermis_lengths_in_pixels[,25:30]
+
+# convert data to long format using tidyr::pivot_longer()
+long1 <- tidyr::pivot_longer(df_set1, everything())
+long2 <- tidyr::pivot_longer(df_set2, everything())
+long3 <- tidyr::pivot_longer(df_set3, everything())
+long4 <- tidyr::pivot_longer(df_set4, everything())
+long5 <- tidyr::pivot_longer(df_set5, everything())
+
+# plot using ggplot and facet_wrap()
+p1<-ggplot(long1[], aes(x = value)) +
+  geom_histogram(color="black", fill="white") +
+  facet_wrap(~ name, scales = "free") +
+  labs(x = "Pixel Value", y = "Frequency")
+p1
+ggsave("animal-derm-pixel-length-spread1.jpg", plot = p1, dpi = 300, width = 6, height = 4, units = "in")
+
+p2<-ggplot(long2[], aes(x = value)) +
+  geom_histogram(color="black", fill="white") +
+  facet_wrap(~ name, scales = "free") +
+  labs(x = "Pixel Value", y = "Frequency")
+p2
+ggsave("animal-derm-pixel-length-spread2.jpg", plot = p2, dpi = 300, width = 6, height = 4, units = "in")
+
+p3<-ggplot(long3[], aes(x = value)) +
+  geom_histogram(color="black", fill="white") +
+  facet_wrap(~ name, scales = "free") +
+  labs(x = "Pixel Value", y = "Frequency")
+ggsave("animal-derm-pixel-length-spread3.jpg", plot = p3, dpi = 300, width = 6, height = 4, units = "in")
+
+p4<-ggplot(long4[], aes(x = value)) +
+  geom_histogram(color="black", fill="white") +
+  facet_wrap(~ name, scales = "free") +
+  labs(x = "Pixel Value", y = "Frequency")
+ggsave("animal-derm-pixel-length-spread4.jpg", plot = p4, dpi = 300, width = 6, height = 4, units = "in")
+
+p5<-ggplot(long5[], aes(x = value)) +
+  geom_histogram(color="black", fill="white") +
+  facet_wrap(~ name, scales = "free") +
+  labs(x = "Pixel Value", y = "Frequency")
+ggsave("animal-derm-pixel-length-spread5.jpg", plot = p5, dpi = 300, width = 6, height = 4, units = "in")
+```
+
