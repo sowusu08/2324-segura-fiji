@@ -1,0 +1,498 @@
+---
+title: "050423-segura-meeting.Rmd"
+output: html_document
+date: "2023-04-05"
+---
+
+### load libraries
+```{r, load}
+library(tidyverse)
+library(dplyr)
+
+conversion = 100/22  #write multiplication conversion factor here; currently holds test value
+```
+
+
+### Read in the epidermis and dermis pixel dataframes 
+skip first column (it is just the number of rows)
+```{r, open-dermis-and-epidermis-dfs}
+all_epidermis <- read_csv(paste0("../data/","all_epidermis_lengths_in_pixels.csv"))
+a<-length(colnames(all_epidermis))
+
+all_dermis <- read_csv(paste0("../data/","all_dermis_lengths_in_pixels.csv"))
+b<-length(colnames(all_dermis))
+
+# skip first column (it is just the number of rows)
+all_epidermis <- all_epidermis[,2:a]
+all_dermis <- all_dermis[,2:b]
+
+# apply conversion
+all_epidermis_micron <- all_epidermis/conversion
+all_dermis_micron <- all_dermis/conversion
+```
+
+### rename epidermis and dermis df for readability
+```{r, load-pixel-epiderm-derm}
+all_dermis_lengths_in_pixels <- all_dermis
+all_epidermis_lengths_in_pixels <- all_epidermis
+
+all_dermis_lengths_in_microns <- all_dermis_micron
+all_epidermis_lengths_in_microns <- all_epidermis_micron
+```
+
+### exclude "problem" Animals
+See oneNote "4/3/23 Progress Update:" for explanation (Animals A,F,I,X,Z10)
+```{r, exclude-bad-animals}
+
+```
+
+### visualize spread of each animal's lengths...
+- use same binwidth and same axes
+#### spread of each animal's pixel lengths for epidermis
+```{r, spread-epi-micron-data}
+df_set1<-all_epidermis_lengths_in_microns[,1:6]
+df_set2<-all_epidermis_lengths_in_microns[,7:12]
+df_set3<-all_epidermis_lengths_in_microns[,13:18]
+df_set4<-all_epidermis_lengths_in_microns[,19:24]
+df_set5<-all_epidermis_lengths_in_microns[,25:30]
+
+# convert data to long format using tidyr::pivot_longer()
+long1 <- tidyr::pivot_longer(df_set1, everything())
+long2 <- tidyr::pivot_longer(df_set2, everything())
+long3 <- tidyr::pivot_longer(df_set3, everything())
+long4 <- tidyr::pivot_longer(df_set4, everything())
+long5 <- tidyr::pivot_longer(df_set5, everything())
+```
+
+##### on scale of 0-125 microns
+```{r, spread-epi-micron-graph}
+# set y-axis range
+x_range <- c(0,125)
+
+# plot using ggplot and facet_wrap()
+p1<-ggplot(long1[], aes(x = value)) +
+  geom_histogram(color="black", fill="white", binwidth = 2) +
+  facet_wrap(~ name, scales = "fixed") +
+  labs(x = "Pixel Value", y = "Frequency")+
+  scale_x_continuous(limits = x_range, expand = c(0, 0))+
+  theme(axis.title.x = element_text())
+p1
+#ggsave("animal-pixel-lenght-spread1.jpg", plot = p1, dpi = 300, width = 6, height = 4, units = "in")
+
+p2<-ggplot(long2[], aes(x = value)) +
+  geom_histogram(color="black", fill="white", binwidth = 2) +
+  facet_wrap(~ name, scales = "fixed") +
+  labs(x = "Pixel Value", y = "Frequency")+
+  scale_x_continuous(limits = x_range, expand = c(0, 0))+
+  theme(axis.title.x = element_text())
+p2
+#ggsave("animal-pixel-lenght-spread2.jpg", plot = p2, dpi = 300, width = 6, height = 4, units = "in")
+
+p3<-ggplot(long3[], aes(x = value)) +
+  geom_histogram(color="black", fill="white", binwidth = 2) +
+  facet_wrap(~ name, scales = "fixed") +
+  labs(x = "Pixel Value", y = "Frequency")+
+  scale_x_continuous(limits = x_range, expand = c(0, 0))+
+  theme(axis.title.x = element_text())
+p3
+#ggsave("animal-pixel-lenght-spread3.jpg", plot = p3, dpi = 300, width = 6, height = 4, units = "in")
+
+p4<-ggplot(long4[], aes(x = value)) +
+  geom_histogram(color="black", fill="white", binwidth = 2) +
+  facet_wrap(~ name, scales = "fixed") +
+  labs(x = "Pixel Value", y = "Frequency")+
+  scale_x_continuous(limits = x_range, expand = c(0, 0))+
+  theme(axis.title.x = element_text())
+p4
+#ggsave("animal-pixel-lenght-spread4.jpg", plot = p4, dpi = 300, width = 6, height = 4, units = "in")
+
+p5<-ggplot(long5[], aes(x = value)) +
+  geom_histogram(color="black", fill="white", binwidth = 2) +
+  facet_wrap(~ name, scales = "fixed") +
+  labs(x = "Pixel Value", y = "Frequency")+
+  scale_x_continuous(limits = x_range, expand = c(0, 0))+
+  theme(axis.title.x = element_text()) 
+p5
+#ggsave("animal-pixel-lenght-spread5.jpg", plot = p5, dpi = 300, width = 6, height = 4, units = "in")
+```
+
+##### zoom in on select graphs
+Only one graph example is shown
+```{r warning=FALSE}
+
+# plot using ggplot and facet_wrap()
+taregtAnimal_only <- long1[] %>% filter(startsWith(name, "Animal_F"))
+
+p1<-ggplot(taregtAnimal_only, aes(x = value)) +
+  geom_density(fill = "blue", alpha = 0.5) +
+  theme_minimal()+
+  facet_wrap(~ name, scales = "fixed") +
+  labs(x = "Pixel Value", y = "Frequency")+
+  scale_x_continuous(limits = c(0,80), expand = c(0, 0))+
+  theme(axis.title.x = element_text())
+  ggsave("../visualizations/shape-center-spread/epiderm/Animal_F-micron-length-spread-zoomedView.jpg", plot=p1, dpi = 300, width = 6, height = 4, units = "in")
+
+p2<-ggplot(taregtAnimal_only, aes(x = value)) +
+  geom_density(fill = "grey", color="transparent", alpha = 0.5) +
+  theme_minimal()+
+  facet_wrap(~ name, scales = "fixed") +
+  labs(x = "Pixel Value", y = "Frequency")+
+  scale_x_continuous(limits = c(0,125), expand = c(0, 0))+
+  theme(axis.title.x = element_text())
+  ggsave("../visualizations/shape-center-spread/epiderm/Animal_F-micron-length-spread-standardView.jpg", plot=p2, dpi = 300, width = 6, height = 4, units = "in")
+
+
+
+```
+
+#### spread of each animal's pixel lengths for dermis
+```{r, spread-epi-pixel}
+df_set1<-all_dermis_lengths_in_pixels[,1:6]
+df_set2<-all_dermis_lengths_in_pixels[,7:12]
+df_set3<-all_dermis_lengths_in_pixels[,13:18]
+df_set4<-all_dermis_lengths_in_pixels[,19:24]
+df_set5<-all_dermis_lengths_in_pixels[,25:30]
+
+# convert data to long format using tidyr::pivot_longer()
+long1 <- tidyr::pivot_longer(df_set1, everything())
+long2 <- tidyr::pivot_longer(df_set2, everything())
+long3 <- tidyr::pivot_longer(df_set3, everything())
+long4 <- tidyr::pivot_longer(df_set4, everything())
+long5 <- tidyr::pivot_longer(df_set5, everything())
+
+# plot using ggplot and facet_wrap()
+p1<-ggplot(long1[], aes(x = value)) +
+  geom_histogram(color="black", fill="white") +
+  facet_wrap(~ name, scales = "free") +
+  labs(x = "Pixel Value", y = "Frequency")
+p1
+ggsave("animal-derm-pixel-length-spread1.jpg", plot = p1, dpi = 300, width = 6, height = 4, units = "in")
+
+p2<-ggplot(long2[], aes(x = value)) +
+  geom_histogram(color="black", fill="white") +
+  facet_wrap(~ name, scales = "free") +
+  labs(x = "Pixel Value", y = "Frequency")
+p2
+ggsave("animal-derm-pixel-length-spread2.jpg", plot = p2, dpi = 300, width = 6, height = 4, units = "in")
+
+p3<-ggplot(long3[], aes(x = value)) +
+  geom_histogram(color="black", fill="white") +
+  facet_wrap(~ name, scales = "free") +
+  labs(x = "Pixel Value", y = "Frequency")
+ggsave("animal-derm-pixel-length-spread3.jpg", plot = p3, dpi = 300, width = 6, height = 4, units = "in")
+
+p4<-ggplot(long4[], aes(x = value)) +
+  geom_histogram(color="black", fill="white") +
+  facet_wrap(~ name, scales = "free") +
+  labs(x = "Pixel Value", y = "Frequency")
+ggsave("animal-derm-pixel-length-spread4.jpg", plot = p4, dpi = 300, width = 6, height = 4, units = "in")
+
+p5<-ggplot(long5[], aes(x = value)) +
+  geom_histogram(color="black", fill="white") +
+  facet_wrap(~ name, scales = "free") +
+  labs(x = "Pixel Value", y = "Frequency")
+ggsave("animal-derm-pixel-length-spread5.jpg", plot = p5, dpi = 300, width = 6, height = 4, units = "in")
+```
+
+### Write function to calculate average length for each column in epidermis and dermis dfs (aka each animal)
+```{r, fnc-to-calcualte-averages}
+# Define a function to calculate column-wise averages
+calculate_averages <- function(data) {
+  # Calculate column-wise averages using colMeans() function
+  avg <- colMeans(data, na.rm = TRUE)
+  
+  # Create a new dataframe to store the column-wise averages
+  avg_df <- data.frame(column = names(data), average = avg)
+  
+  # Return the new dataframe
+  return(avg_df)
+}
+
+# The calculate_averages() function takes one argument data, which is the dataframe for which we want to calculate the column-wise averages.
+# 
+# The colMeans() function is used to calculate the column-wise averages of the dataframe. The na.rm = TRUE argument specifies that missing values should be removed before calculating the averages.
+# 
+# We then create a new dataframe avg_df to store the column names and their respective averages. The data.frame() function is used to create the new dataframe with two columns: "column" for the column names, and "average" for the column-wise averages.
+# 
+# Finally, we return the new dataframe avg_df from the function.
+```
+
+### Use previous function to create dataframes with averages for epidermis and dermis df's
+```{r, calc-averages}
+# Call the calculate_averages() function to calculate the column-wise averages
+all_epidermis_in_pixels_AVG <- calculate_averages(all_epidermis_lengths_in_pixels)
+colnames(all_epidermis_in_pixels_AVG)<-c("filename", "average")
+rownames(all_epidermis_in_pixels_AVG)<-c(1:length(rownames(all_epidermis_in_pixels_AVG)))
+
+all_dermis_in_pixels_AVG <- calculate_averages(all_dermis_lengths_in_pixels)
+colnames(all_dermis_in_pixels_AVG)<-c("filename", "average")
+rownames(all_dermis_in_pixels_AVG)<-c(1:length(rownames(all_epidermis_in_pixels_AVG)))
+```
+
+### Visualize average pixel lengths (per animal) for epidermis/dermis 
+Use bar chart
+```{r, viz-animal-pixel-averages}
+categories <- c(letters[1:16], "r", "u", "v", "w", "x", "y", "z", "z1", "z10", "z2", "z4", "z6", "z8", "z9")
+
+# for epidermis
+df1<- cbind(all_epidermis_in_pixels_AVG, categories)
+p1<-ggplot(df1, aes(x = categories, y = all_epidermis_in_pixels_AVG[,2])) +
+  geom_bar(stat = "identity", color="black", fill="white") +
+  xlab("Animal") +
+  ylab("Average Length of Epidermis in pixels")
+p1
+
+ggsave("avg-epidermis-pixel-length-by-animal.jpg", plot = p1, dpi = 300, width = 6, height = 4, units = "in")
+
+# for dermis
+df2<- cbind(all_dermis_in_pixels_AVG, categories)
+p2<-ggplot(df2, aes(x = categories, y = all_epidermis_in_pixels_AVG[,2])) +
+  geom_bar(stat = "identity", color="black", fill="white") +
+  xlab("Animal") +
+  ylab("Average Length of Dermis in pixels")
+p2
+
+ggsave("avg-dermis-pixel-length-by-animal.jpg", plot = p2, dpi = 300, width = 6, height = 4, units = "in")
+```
+
+
+### save blinded average pixel length df's for epidermis and dermis
+```{r, save-blind-avg-pixel-dermis-and-epidermis-dfs}
+## ONLY RUN IF DATAFRAMS NOT ALREADY SAVED!
+
+write.csv(df1, file=paste0("../data/","blind_avg_epidermis_lengths_in_pixels.csv"))
+write.csv(df2, file=paste0("../data/","blind_avg_dermis_lengths_in_pixels.csv"))
+```
+
+### Write funciton to unblind animal identities
+__Question__: What is identity of AnimalD? in terms of post-op day?
+*Don't forget to add identities for new animals and re-run the rest of the notebook currently they are blank* 
+```{r, unblind-fnc}
+add_identity_unblind_column <- function(df) {
+  # Define a lookup table of filename prefixes and corresponding identity_unblind values
+  prefixes <- c("Animal_A" = "Exp17_Racemic-MAP_POD7_Mouse14",
+                "Animal_C" = "Exp16_D-MAP_POD4_Mouse3",
+                "Animal_D" = "Exp15_L-MAP_Mouse3_POD4",
+                "Animal_E" = "Exp14_No-MAP_POD7_Mouse11",
+                "Animal_F" = "Exp17_Racemic-MAP_POD7_Mouse11",
+                "Animal_G" = "Unmanipulated_PepB",
+                "Animal_H" = "Exp17_Racemic-MAP_POD4_Mouse2",
+                "Animal_I" = "Exp15_L-MAP_POD7_Mouse13",
+                "Animal_J" = "Exp15_L-MAP_POD4_Mouse2",
+                "Animal_K" = "Exp14_No-MAP_POD4_Mouse4",
+                "Animal_L" = "Exp14_No-MAP_POD7_Mouse12",
+                "Animal_M" = "Exp14_No-MAP_POD4_Mouse3",
+                "Animal_N" = "Unmanip_PepB",
+                "Animal_O" = "Exp17_Racemic-MAP_POD7_Mouse13",
+                "Animal_U" = "Exp14_No-MAP_POD4_Mouse1",
+                "Animal_V" = "Unmanip_B6",
+                "Animal_W" = "Exp17_Racemic-MAP_POD7_Mouse12",
+                "Animal_X" = "Exp14_No-MAP_POD4_Mouse2",
+                #"Animal_Y" = "Exp16_D-MAP_POD7_Mouse11",
+                "Animal_Z" = "UnmanipB6",
+                "Animal_Z1" = "Exp17_Racemic-MAP_POD4_Mouse1",
+                "Animal_Z2" = "Exp14_POD7_Mouse14_No-MAP",
+                #"Animal_Z3" = "Exp15_Mouse12_POD7_LMAP",
+                "Animal_Z4" = "Exp15_POD4_Mouse1",
+                "Animal_B" = "Exp15_POD7_Mouse11_L-MAP",
+                "Animal_P" = "Exp14_POD7_Mouse13_D-MAP",
+                #"Animal_R" = "Exp16_POD7_Mouse2_D-MAP",
+                "Animal_Z6" = "Exp16_POD7_Mouse11_D-MAP",
+                "Animal_Z8" = "Exp16_POD4_Mouse2_D-MAP",
+                "Animal_Z9" = "Exp17_POD4_Mouse3_Racemic-MAP",
+                "Animal_Z10" = "Exp16_POD4_Mouse1_D-MAP")
+  
+  # Use sapply to look up the identity_unblind value for each filename in the dataframe
+  df$identity_unblind <- sapply(df$filename, function(x) {
+    prefix <- substr(x, 1, 8) # Extract the first 8 characters of the filename
+    prefixes[prefix] # Look up the corresponding identity_unblind value
+  })
+  
+  return(df)
+}
+
+```
+
+### Use previous function to unblind epidermis and dermis df's
+```{r, use-unblind-fnc}
+unblind_all_epidermis_in_pixels_AVG <- add_identity_unblind_column(all_epidermis_in_pixels_AVG)
+
+unblind_all_dermis_in_pixels_AVG <- add_identity_unblind_column(all_dermis_in_pixels_AVG)
+```
+
+### save the unblind epidermis and dermis dfs
+```{r, save-ublinded-dfs}
+# ONLY RUN IF THESE DF's AREN'T ALREADY SAVED!!
+write.csv(unblind_all_epidermis_in_pixels_AVG, file=paste0("../data/","unblind_avg_epidermis_lengths_in_pixels.csv"))
+
+write.csv(unblind_all_dermis_in_pixels_AVG, file=paste0("../data/","unblind_avg_dermis_lengths_in_pixels.csv"))
+```
+
+### Prism graphs
+#### Write function to filter data for prism
+```{r, filter-prism-fnc}
+# get only the unmanip
+filter_data_by_phrase <- function(df, phrase) {
+  filtered_df <- df[grep(phrase, df$identity_unblind), ]
+  return(filtered_df)
+}
+
+# This function takes two parameters: df, which is the data frame to be filtered, and phrase, which is the phrase to search for in the "identity_unblind" column. The grep() function is used to search for the given phrase in the "identity_unblind" column, and the resulting indices are used to subset the original data frame.
+```
+
+#### Wrtie fucntion to deal with different lengths for filtered data made for prism
+```{r, df-length-fnc}
+create_dataframe <- function(vec1, vec2, vec3, vec4, vec5) {
+  # Get the maximum length of the vectors
+  max_length <- max(length(vec1), length(vec2), length(vec3), length(vec4), length(vec5))
+  
+  # Pad shorter vectors with NAs
+  vec1 <- c(vec1, rep(NA, max_length - length(vec1)))
+  vec2 <- c(vec2, rep(NA, max_length - length(vec2)))
+  vec3 <- c(vec3, rep(NA, max_length - length(vec3)))
+  vec4 <- c(vec4, rep(NA, max_length - length(vec4)))
+  vec5 <- c(vec5, rep(NA, max_length - length(vec5)))
+  
+  # Create the data frame
+  df <- data.frame(vec1, vec2, vec3, vec4, vec5)
+  return(df)
+}
+
+```
+
+#### Use the previous two functions to filter data for prism part 1
+```{r, use-filter-prism-fnc}
+p1<- "Unmanip"
+p2<-"No-MAP"
+p3<-"L-MAP"
+p4<-"D-MAP"
+p5<-"Racemic-MAP"
+
+# for epiderm
+
+# deal with different lengths
+all_epidermal_pixel_thickness_prismDf<-create_dataframe((filter_data_by_phrase(unblind_all_epidermis_in_pixels_AVG, p1))$average,
+      (filter_data_by_phrase(unblind_all_epidermis_in_pixels_AVG, p2))$average,
+      (filter_data_by_phrase(unblind_all_epidermis_in_pixels_AVG, p3))$average,
+      (filter_data_by_phrase(unblind_all_epidermis_in_pixels_AVG, p4))$average,
+      (filter_data_by_phrase(unblind_all_epidermis_in_pixels_AVG, p5))$average)
+colnames(all_epidermal_pixel_thickness_prismDf) <- c("NonOp", "No MAP", "L-MAP", "D-MAP", "R-MAP")
+View(all_epidermal_pixel_thickness_prismDf)
+
+# for derm
+all_dermal_pixel_thickness_prismDf<-create_dataframe((filter_data_by_phrase(unblind_all_dermis_in_pixels_AVG, p1))$average,
+      (filter_data_by_phrase(unblind_all_dermis_in_pixels_AVG, p2))$average,
+      (filter_data_by_phrase(unblind_all_dermis_in_pixels_AVG, p3))$average,
+      (filter_data_by_phrase(unblind_all_dermis_in_pixels_AVG, p4))$average,
+      (filter_data_by_phrase(unblind_all_dermis_in_pixels_AVG, p5))$average)
+colnames(all_dermal_pixel_thickness_prismDf) <- c("NonOp", "No MAP", "L-MAP", "D-MAP", "R-MAP")
+View(all_dermal_pixel_thickness_prismDf)
+```
+
+#### save the prism df's made in the previous chunk
+```{r, save-prism-dfs}
+# ONLY RUN IF THESE DF's AREN'T ALREADY SAVED!!
+write.csv(epidermal_thickness_prismDf, file=paste0("../data/","all_epidermal_pixel_thickness_prismDf.csv"))
+
+write.csv(dermal_thickness_prismDf, file=paste0("../data/","all_dermal_pixel_thickness_prismDf.csv"))
+```
+
+#### export to github for prism part 1
+Run the following in terminal
+git add ../data/all_epidermal_pixel_thickness_prismDf.csv 
+git add ../data/all_dermal_pixel_thickness_prismDf.csv 
+git commit -m "add prism part1 file"
+git push
+
+Then go to github and copy paste into excel
+Then copy and past into prism
+
+
+#### Use the previous two functions to filter data for prism part 2 (POD4 & POD7)
+When copyign and pasting remember to exclude 1st column which is placeholder repeat
+```{r, use-filter-prism-fnc}
+p2<-"No-MAP"
+p3<-"L-MAP"
+p4<-"D-MAP"
+p5<-"Racemic-MAP"
+
+# POD4----------------------
+# for epiderm
+#first filter by pod4
+df1<-filter_data_by_phrase(unblind_all_epidermis_in_pixels_AVG, "POD4")
+
+# deal with different lengths
+pod4_epidermal_pixel_thickness_prismDf<-create_dataframe(
+      c(NA),
+      (filter_data_by_phrase(df1, p2))$average,
+      (filter_data_by_phrase(df1, p3))$average,
+      (filter_data_by_phrase(df1, p4))$average,
+      (filter_data_by_phrase(df1, p5))$average)
+colnames(pod4_epidermal_pixel_thickness_prismDf) <- c("don't copy this column","No MAP", "L-MAP", "D-MAP", "R-MAP")
+View(pod4_epidermal_pixel_thickness_prismDf)
+
+# for derm
+#first filter by pod4
+df2<-filter_data_by_phrase(unblind_all_dermis_in_pixels_AVG, "POD4")
+
+# deal with different lengths
+pod4_dermal_pixel_thickness_prismDf<-create_dataframe(
+      c(NA),
+      (filter_data_by_phrase(df2, p2))$average,
+      (filter_data_by_phrase(df2, p3))$average,
+      (filter_data_by_phrase(df2, p4))$average,
+      (filter_data_by_phrase(df2, p5))$average)
+colnames(pod4_dermal_pixel_thickness_prismDf) <- c("don't copy this column", "No MAP", "L-MAP", "D-MAP", "R-MAP")
+View(pod4_dermal_pixel_thickness_prismDf)
+
+# POD7----------------------
+# for epiderm
+#first filter by pod4
+df1<-filter_data_by_phrase(unblind_all_epidermis_in_pixels_AVG, "POD7")
+
+# deal with different lengths
+pod7_epidermal_pixel_thickness_prismDf<-create_dataframe(
+      c(NA),    
+      (filter_data_by_phrase(df1, p2))$average,
+      (filter_data_by_phrase(df1, p3))$average,
+      (filter_data_by_phrase(df1, p4))$average,
+      (filter_data_by_phrase(df1, p5))$average)
+colnames(pod7_epidermal_pixel_thickness_prismDf) <- c("don't copy this column","No MAP", "L-MAP", "D-MAP", "R-MAP")
+View(pod7_epidermal_pixel_thickness_prismDf)
+
+# for derm
+#first filter by pod4
+df2<-filter_data_by_phrase(unblind_all_dermis_in_pixels_AVG, "POD7")
+
+# deal with different lengths
+pod7_dermal_pixel_thickness_prismDf<-create_dataframe(
+      c(NA),    
+      (filter_data_by_phrase(df2, p2))$average,
+      (filter_data_by_phrase(df2, p3))$average,
+      (filter_data_by_phrase(df2, p4))$average,
+      (filter_data_by_phrase(df2, p5))$average)
+colnames(pod7_dermal_pixel_thickness_prismDf) <- c("don't copy this column","No MAP", "L-MAP", "D-MAP", "R-MAP")
+View(pod7_dermal_pixel_thickness_prismDf)
+```
+
+#### save the prism df's made in the previous chunk
+```{r, save-prism-dfs}
+# ONLY RUN IF THESE DF's AREN'T ALREADY SAVED!!
+write.csv(pod4_epidermal_pixel_thickness_prismDf, file=paste0("../data/","pod4_epidermal_pixel_thickness_prismDf.csv"))
+write.csv(pod4_dermal_pixel_thickness_prismDf, file=paste0("../data/","pod4_dermal_pixel_thickness_prismDf.csv"))
+
+write.csv(pod7_epidermal_pixel_thickness_prismDf, file=paste0("../data/","pod7_epidermal_pixel_thickness_prismDf.csv"))
+write.csv(pod7_dermal_pixel_thickness_prismDf, file=paste0("../data/","pod7_dermal_pixel_thickness_prismDf.csv"))
+```
+
+#### export to github for prism part 2
+Run the following in terminal
+git add ../data/pod4_epidermal_pixel_thickness_prismDf.csv 
+git add ../data/pod4_dermal_pixel_thickness_prismDf.csv 
+git add ../data/pod7_epidermal_pixel_thickness_prismDf.csv
+git add ../data/pod7_dermal_pixel_thickness_prismDf.csv 
+git commit -m "add prism part2 file"
+git push
+
+Then go to github and copy paste into excel
+Then copy and past into prism
