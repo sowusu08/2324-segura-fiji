@@ -340,6 +340,33 @@ calculate_median <- function(data) {
 }
 ```
 
+### 3f. Write function to calculate mode length for each column (aka each animal)
+```{r, fnc-to-calcualte-averages}
+
+calculate_mode <- function(data) {
+  # round each number to ones place and find mode
+  find_mode <- function(vector){
+    na_rm_values <- vector[!is.na(vector)]
+    
+    na_rm_values <- round(na_rm_values)
+    
+     unique_vals <- unique(na_rm_values)
+     counts <- tabulate(match(na_rm_values, unique_vals))
+     modes <- unique_vals[counts == max(counts)]
+  return(modes)
+  }
+  
+  # Calculate column-wise averages using colMeans() function
+  mode <- apply(data, 2, find_mode)
+  
+  # Create a new dataframe to store the column-wise averages
+  mode_df <- data.frame(column = names(data), mode = mode)
+  
+  # Return the new dataframe
+  return(mode_df)
+}
+```
+
 ## 4. Use previous function to create dataframes for all metrics
 
 ### 4a. make df for SD's for each animal lengths
