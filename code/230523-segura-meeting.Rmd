@@ -290,6 +290,27 @@ calculate_range <- function(data) {
 ```
 
 
+### 3c. Write function to calculate iqr of length for each column (aka each animal) 
+```{r, fnc-to-calc-sd}
+calculate_iqr <- function(data) {
+  
+ IQR_ <- function(vector){
+   na_rm_values <- vector[!is.na(vector)]
+   return(IQR(na_rm_values))
+ }
+ 
+  IQRs <- apply(data, 2, IQR_)
+  
+  # Create a new dataframe to store the column-wise averages
+  iqr_df <- data.frame(column = names(data), iqr = IQRs)
+  
+  # Return the new dataframe
+  return(iqr_df)
+}
+
+
+```
+
 ### 3c. Write function to calculate average length for each column in epidermis and dermis dfs (aka each animal)
 ```{r, fnc-to-calcualte-averages}
 # Define a function to calculate column-wise averages
