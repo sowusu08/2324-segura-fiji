@@ -264,7 +264,7 @@ calculate_sd <- function(data) {
 ```
 
 ### 3b. Write function to calculate range (max-min) of length for each column (aka each animal) 
-```{r, fnc-to-calc-sd}
+```{r, fnc-to-calc-range}
 calculate_range <- function(data) {
   
  range_ <- function(vector){
@@ -291,7 +291,7 @@ calculate_range <- function(data) {
 
 
 ### 3c. Write function to calculate iqr of length for each column (aka each animal) 
-```{r, fnc-to-calc-sd}
+```{r, fnc-to-calc-iqr}
 calculate_iqr <- function(data) {
   
  IQR_ <- function(vector){
@@ -326,7 +326,7 @@ calculate_averages <- function(data) {
 ```
 
 ### 3e. Write function to calculate median length for each column (aka each animal)
-```{r, fnc-to-calcualte-averages}
+```{r, fnc-to-calcualte-med}
 # Define a function to calculate column-wise averages
 calculate_median <- function(data) {
   # Calculate column-wise averages using colMeans() function
@@ -341,7 +341,7 @@ calculate_median <- function(data) {
 ```
 
 ### 3f. Write function to calculate mode length for each column (aka each animal)
-```{r, fnc-to-calcualte-averages}
+```{r, fnc-to-calcualte-mode}
 
 calculate_mode <- function(data) {
   # round each number to ones place and find mode
@@ -356,15 +356,24 @@ calculate_mode <- function(data) {
   return(modes)
   }
   
-  # Calculate column-wise averages using colMeans() function
+  # Calculate column-wise modes function
   mode <- apply(data, 2, find_mode)
   
-  # Create a new dataframe to store the column-wise averages
+  # Create a new dataframe to store the column-wise modes
   mode_df <- data.frame(column = names(data), mode = mode)
   
   # Return the new dataframe
   return(mode_df)
 }
+```
+
+### 3g. Write a master function that takes a function as an argument and unblinds the data frame and saves a dataframe where each column is the treatment received by the animal (nonop, op, map, etc.)
+
+make dataframes (excel) that can be copied and pasted into prism and put them all on one excel doc just different sheets
+
+aka one sheet for mean, median, mode, sd, range, etc.
+
+```{r, master-fnc-prism}
 ```
 
 ## 4. Use previous function to create dataframes for all metrics
