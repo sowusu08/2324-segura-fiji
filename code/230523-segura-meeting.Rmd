@@ -308,10 +308,9 @@ calculate_iqr <- function(data) {
   return(iqr_df)
 }
 
-
 ```
 
-### 3c. Write function to calculate average length for each column in epidermis and dermis dfs (aka each animal)
+### 3d. Write function to calculate mean length for each column (aka each animal)
 ```{r, fnc-to-calcualte-averages}
 # Define a function to calculate column-wise averages
 calculate_averages <- function(data) {
@@ -324,7 +323,21 @@ calculate_averages <- function(data) {
   # Return the new dataframe
   return(avg_df)
 }
+```
 
+### 3e. Write function to calculate median length for each column (aka each animal)
+```{r, fnc-to-calcualte-averages}
+# Define a function to calculate column-wise averages
+calculate_median <- function(data) {
+  # Calculate column-wise averages using colMeans() function
+  med <- apply(data, 2, median, na.rm = TRUE)
+  
+  # Create a new dataframe to store the column-wise averages
+  med_df <- data.frame(column = names(data), median = med)
+  
+  # Return the new dataframe
+  return(med_df)
+}
 ```
 
 ## 4. Use previous function to create dataframes for all metrics
