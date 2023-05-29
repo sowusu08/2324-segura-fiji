@@ -386,7 +386,34 @@ mutate_map <- function(df){
 )))
 }
 
-master <- function(data, mutate = TRUE){
+#Write function to filter data for prism
+filter_data_by_phrase <- function(df, phrase) {
+  filtered_df <- df[grep(phrase, df$identity_unblind), ]
+  return(filtered_df)
+}
+
+p1<- "Unmanipulated"
+p2<-"NoMAP"
+p3<-"MAP"
+
+# Wrtie fucntion to deal with different lengths for filtered data made for prism
+create_dataframe <- function(vec1, vec2, vec3, vec4, vec5) {
+  # Get the maximum length of the vectors
+  max_length <- max(length(vec1), length(vec2), length(vec3), length(vec4), length(vec5))
+  
+  # Pad shorter vectors with NAs
+  vec1 <- c(vec1, rep(NA, max_length - length(vec1)))
+  vec2 <- c(vec2, rep(NA, max_length - length(vec2)))
+  vec3 <- c(vec3, rep(NA, max_length - length(vec3)))
+  vec4 <- c(vec4, rep(NA, max_length - length(vec4)))
+  vec5 <- c(vec5, rep(NA, max_length - length(vec5)))
+  
+  # Create the data frame
+  df <- data.frame(vec1, vec2, vec3, vec4, vec5)
+  return(df)
+}
+
+master <- function(data){
   # store all metric dataframes and add treatment labels
   sd_data <- add_identity_unblind_column(calculate_sd(data))
   range_data <- add_identity_unblind_column(calculate_range(data))
@@ -397,7 +424,7 @@ master <- function(data, mutate = TRUE){
   avg_data <- add_identity_unblind_column(calculate_averages(data))
   
   # then mutate so any map treatment is grouped
-  if(mutate == T){
+  
     sd_data <- mutate_map(sd_data)
     range_data <- mutate_map(range_data)
     iqr_data <- mutate_map(iqr_data)
@@ -405,9 +432,17 @@ master <- function(data, mutate = TRUE){
     mode_data <- mutate_map(mode_data)
     med_data <- mutate_map(med_data)
     avg_data <- mutate_map(avg_data)
-  }
   
-  # and then 
+  
+  # and then make dataframe with a column each of the treatment groups (MAP, NoMAP, Unmanip)
+    sd_data_sorted <- create_dataframe(filter_data_by_phrase(sd_data))
+    
+    all_epidermal_pixel_thickness_prismDf<-create_dataframe((filter_data_by_phrase(unblind_all_epidermis_in_pixels_AVG, p1))$average,
+      (filter_data_by_phrase(unblind_all_epidermis_in_pixels_AVG, p2))$average,
+      (filter_data_by_phrase(unblind_all_epidermis_in_pixels_AVG, p3))$average,
+      (filter_data_by_phrase(unblind_all_epidermis_in_pixels_AVG, p4))$average,
+      (filter_data_by_phrase(unblind_all_epidermis_in_pixels_AVG, p5))$average)
+colnames(all_epidermal_pixel_thickness_prismDf) <- c("NonOp", "No MAP", "L-MAP", "D-MAP", "R-MAP")
 }
 ```
 
