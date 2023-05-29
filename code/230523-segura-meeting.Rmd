@@ -384,9 +384,11 @@ library(writexl)
 # write helper function to group animals by one of three treatment groups (MAP, NoMAP, Unmanipulated)
 mutate_map <- function(df){
   return(mutate(df,treatment = case_when(
-  identity_unblind %in% c("L-MAP", "D-MAP", "Racemic-MAP") ~ "MAP",
-  identity_unblind == "No-MAP" ~ "NoMAP",
-  identity_unblind == "Unmanip" ~ "Unmanipulated",
+  grepl("L-MAP|D-MAP|Racemic-MAP", identity_unblind) ~ "MAP",
+  grepl("No-MAP", identity_unblind) ~ "NoMAP",
+  grepl("Unmanip", identity_unblind) ~ "Unmanipulated",
+  # assume unmanipulated if none of the above phrases are present
+  !grepl("L-MAP|D-MAP|Racemic-MAP|No-MAP|Unmanip", identity_unblind) ~ "Unmanipulated",
   TRUE ~ NA_character_
 )))
 }
