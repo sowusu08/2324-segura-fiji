@@ -211,7 +211,6 @@ add_identity_unblind_column <- function(df) {
                 "Animal_J.t" = "Exp15_L-MAP_POD4_Mouse2",
                  "Animal_O.t" = "Exp17_Racemic-MAP_POD7_Mouse13",
                 "Animal_W.t" = "Exp17_Racemic-MAP_POD7_Mouse12",
-                "Animal_X.t" = "Exp14_No-MAP_POD4_Mouse2",
                 "Animal_Y.t" = "Exp16_D-MAP_POD7_Mouse11",
                 "Animal_Z1." = "Exp17_Racemic-MAP_POD4_Mouse1",
                 "Animal_B.t" = "Exp15_POD7_Mouse11_L-MAP",
@@ -219,7 +218,7 @@ add_identity_unblind_column <- function(df) {
                 "Animal_R.t" = "Exp16_POD7_Mouse2_D-MAP",
                 "Animal_Z6." = "Exp16_POD7_Mouse11_D-MAP",
                 "Animal_Z8." = "Exp16_POD4_Mouse2_D-MAP",
-                 "Animal_Z3." = "Exp15_Mouse12_POD7_LMAP",
+                 #"Animal_Z3." = "Exp15_Mouse12_POD7_LMAP",
                 "Animal_Z9." = "Exp17_POD4_Mouse3_Racemic-MAP",
                 "Animal_Z10" = "Exp16_POD4_Mouse1_D-MAP",
                
@@ -229,11 +228,12 @@ add_identity_unblind_column <- function(df) {
                 "Animal_M.t" = "Exp14_No-MAP_POD4_Mouse3",
                 "Animal_U.t" = "Exp14_No-MAP_POD4_Mouse1",
                 "Animal_Z2." = "Exp14_POD7_Mouse14_No-MAP",
-                "Animal_Z4." = "Exp15_POD4_Mouse1",
+                "Animal_X.t" = "Exp14_No-MAP_POD4_Mouse2",
                 
                 "Animal_G.t" = "Unmanipulated_PepB",
                 "Animal_N.t" = "Unmanip_PepB",
                 "Animal_V.t" = "Unmanip_B6",
+                "Animal_Z4." = "Exp15_POD4_Mouse1",
                 "Animal_Z.t" = "UnmanipB6")
                 
                 
@@ -376,7 +376,8 @@ aka one sheet for mean, median, mode, sd, range, etc.
 
 ```{r, master-fnc-prism}
 # load library for making excel spreadhseet
-library(writexl)
+library(openxlsx)
+
 
 
 # call all metric functions on data
@@ -395,28 +396,27 @@ mutate_map <- function(df){
 
 #Write helper function to filter data for prism
 filter_data_by_phrase <- function(df, phrase) {
-  filtered_df <- df[grep(phrase, df$identity_unblind), ]
+  filtered_df <- df[grep(phrase, df$treatment), ]
   return(filtered_df)
 }
 
-p1<- "Unmanipulated"
-p2<-"NoMAP"
-p3<-"MAP"
+# set filtering phrases using ^ and $ to signify start and end of phrase for exact search/avoidign under-filtering 
+p1<- "^Unmanipulated$"
+p2<-"^NoMAP$"
+p3<-"^MAP$"
 
 # Wrtie helper fucntion to deal with different lengths for filtered data made for prism
-create_dataframe <- function(vec1, vec2, vec3, vec4, vec5) {
+create_dataframe <- function(vec1, vec2, vec3) {
   # Get the maximum length of the vectors
-  max_length <- max(length(vec1), length(vec2), length(vec3), length(vec4), length(vec5))
+  max_length <- max(length(vec1), length(vec2), length(vec3))
   
   # Pad shorter vectors with NAs
   vec1 <- c(vec1, rep(NA, max_length - length(vec1)))
   vec2 <- c(vec2, rep(NA, max_length - length(vec2)))
   vec3 <- c(vec3, rep(NA, max_length - length(vec3)))
-  vec4 <- c(vec4, rep(NA, max_length - length(vec4)))
-  vec5 <- c(vec5, rep(NA, max_length - length(vec5)))
-  
+
   # Create the data frame
-  df <- data.frame(vec1, vec2, vec3, vec4, vec5)
+  df <- data.frame(vec1, vec2, vec3)
   return(df)
 }
 
@@ -482,21 +482,29 @@ master <- function(data){
     colnames(mode_data_sorted) <- c("Unmanipulated", "NoMAP", "MAP")
     colnames(med_data_sorted) <- c("Unmanipulated", "NoMAP", "MAP")
     colnames(mean_data_sorted) <- c("Unmanipulated", "NoMAP", "MAP")
+  
     
     # then make excel spreadsheet where each df occupies one sheet
     # first Create a workbook object
-    wb <- create_workbook()
+    wb <- createWorkbook()
     
     # then add data frames to separate sheets
-  add_worksheet(wb, data = sd_data_sorted, sheetName = "Sheet1")
-  add_worksheet(wb, data = range_data_sorted, sheetName = "Sheet2")
-  add_worksheet(wb, data = iqr_data_sorted, sheetName = "Sheet3")
-  add_worksheet(wb, data = mode_data_sorted, sheetName = "Sheet4")
-  add_worksheet(wb, data = med_data_sorted, sheetName = "Sheet5")
-  add_worksheet(wb, data = mean_data_sorted, sheetName = "Sheet6")
+  addWorksheet(wb, sheetName = "sd")
+  addWorksheet(wb, sheetName = "range")
+  addWorksheet(wb, sheetName = "iqr")
+  addWorksheet(wb, sheetName = "mode")
+  addWorksheet(wb, sheetName = "median")
+  addWorksheet(wb, sheetName = "mean")
+  
+  writeData(wb,"sd",sd_data_sorted)
+  writeData(wb,"range",range_data_sorted)
+  writeData(wb,"iqr",iqr_data_sorted)
+  writeData(wb,"mode",mode_data_sorted)
+  writeData(wb,"median",med_data_sorted)
+  writeData(wb,"mean",mean_data_sorted)
   
   # finally save the workbook to a file
-save_workbook(wb, "../data/230523-prism-output.xlsx")
+saveWorkbook(wb, "../data/230523-prism-output.xlsx")
 }
 ```
 
