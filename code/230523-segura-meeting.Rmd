@@ -214,9 +214,9 @@ add_identity_unblind_column <- function(df) {
                 "Animal_X.t" = "Exp14_No-MAP_POD4_Mouse2",
                 "Animal_Y.t" = "Exp16_D-MAP_POD7_Mouse11",
                 "Animal_Z1." = "Exp17_Racemic-MAP_POD4_Mouse1",
-                "Animal_B." = "Exp15_POD7_Mouse11_L-MAP",
-                "Animal_P." = "Exp14_POD7_Mouse13_D-MAP",
-                "Animal_R." = "Exp16_POD7_Mouse2_D-MAP",
+                "Animal_B.t" = "Exp15_POD7_Mouse11_L-MAP",
+                "Animal_P.t" = "Exp14_POD7_Mouse13_D-MAP",
+                "Animal_R.t" = "Exp16_POD7_Mouse2_D-MAP",
                 "Animal_Z6." = "Exp16_POD7_Mouse11_D-MAP",
                 "Animal_Z8." = "Exp16_POD4_Mouse2_D-MAP",
                  "Animal_Z3." = "Exp15_Mouse12_POD7_LMAP",
@@ -228,8 +228,8 @@ add_identity_unblind_column <- function(df) {
                 "Animal_L.t" = "Exp14_No-MAP_POD7_Mouse12",
                 "Animal_M.t" = "Exp14_No-MAP_POD4_Mouse3",
                 "Animal_U.t" = "Exp14_No-MAP_POD4_Mouse1",
-                "Animal_Z2.t" = "Exp14_POD7_Mouse14_No-MAP",
-                "Animal_Z4.t" = "Exp15_POD4_Mouse1",
+                "Animal_Z2." = "Exp14_POD7_Mouse14_No-MAP",
+                "Animal_Z4." = "Exp15_POD4_Mouse1",
                 
                 "Animal_G.t" = "Unmanipulated_PepB",
                 "Animal_N.t" = "Unmanip_PepB",
@@ -239,7 +239,7 @@ add_identity_unblind_column <- function(df) {
                 
   
   # Use sapply to look up the identity_unblind value for each filename in the dataframe
-  df$identity_unblind <- sapply(df$filename, function(x) {
+  df$identity_unblind <- sapply(df$column, function(x) {
     prefix <- substr(x, 1, 10) # Extract the first 8 characters of the filename
     prefixes[prefix] # Look up the corresponding identity_unblind value
   })
@@ -499,6 +499,9 @@ save_workbook(wb, "../data/230523-prism-output.xlsx")
 ```
 
 ## 4. Use previous function to create dataframes for all metrics
+```{r, use-master-fnc}
+master(all_dermis_lengths_in_microns)
+```
 
 ### 4a. make df for SD's for each animal lengths
 ```{r, calc-averages}
