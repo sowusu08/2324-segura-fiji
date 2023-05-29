@@ -375,8 +375,13 @@ make dataframes (excel) that can be copied and pasted into prism and put them al
 aka one sheet for mean, median, mode, sd, range, etc.
 
 ```{r, master-fnc-prism}
+# load library for making excel spreadhseet
+library(writexl)
+
+
 # call all metric functions on data
 
+# write helper function to group animals by one of three treatment groups (MAP, NoMAP, Unmanipulated)
 mutate_map <- function(df){
   return(mutate(df,treatment = case_when(
   identity_unblind %in% c("L-MAP", "D-MAP", "Racemic-MAP") ~ "MAP",
@@ -386,7 +391,7 @@ mutate_map <- function(df){
 )))
 }
 
-#Write function to filter data for prism
+#Write helper function to filter data for prism
 filter_data_by_phrase <- function(df, phrase) {
   filtered_df <- df[grep(phrase, df$identity_unblind), ]
   return(filtered_df)
@@ -396,7 +401,7 @@ p1<- "Unmanipulated"
 p2<-"NoMAP"
 p3<-"MAP"
 
-# Wrtie fucntion to deal with different lengths for filtered data made for prism
+# Wrtie helper fucntion to deal with different lengths for filtered data made for prism
 create_dataframe <- function(vec1, vec2, vec3, vec4, vec5) {
   # Get the maximum length of the vectors
   max_length <- max(length(vec1), length(vec2), length(vec3), length(vec4), length(vec5))
@@ -435,14 +440,61 @@ master <- function(data){
   
   
   # and then make dataframe with a column each of the treatment groups (MAP, NoMAP, Unmanip)
-    sd_data_sorted <- create_dataframe(filter_data_by_phrase(sd_data))
+    sd_data_sorted<-create_dataframe(
+      (filter_data_by_phrase(sd_data, p1))$sd,
+      (filter_data_by_phrase(sd_data, p2))$sd,
+      (filter_data_by_phrase(sd_data, p3))$sd
+      )
+    range_data_sorted<-create_dataframe(
+      (filter_data_by_phrase(range_data, p1))$range,
+      (filter_data_by_phrase(range_data, p2))$range,
+      (filter_data_by_phrase(range_data, p3))$range
+      )
+    iqr_data_sorted<-create_dataframe(
+      (filter_data_by_phrase(iqr_data, p1))$iqr,
+      (filter_data_by_phrase(iqr_data, p2))$iqr,
+      (filter_data_by_phrase(iqr_data, p3))$iqr
+      )
     
-    all_epidermal_pixel_thickness_prismDf<-create_dataframe((filter_data_by_phrase(unblind_all_epidermis_in_pixels_AVG, p1))$average,
-      (filter_data_by_phrase(unblind_all_epidermis_in_pixels_AVG, p2))$average,
-      (filter_data_by_phrase(unblind_all_epidermis_in_pixels_AVG, p3))$average,
-      (filter_data_by_phrase(unblind_all_epidermis_in_pixels_AVG, p4))$average,
-      (filter_data_by_phrase(unblind_all_epidermis_in_pixels_AVG, p5))$average)
-colnames(all_epidermal_pixel_thickness_prismDf) <- c("NonOp", "No MAP", "L-MAP", "D-MAP", "R-MAP")
+    mode_data_sorted<-create_dataframe(
+      (filter_data_by_phrase(mode_data, p1))$mode,
+      (filter_data_by_phrase(mode_data, p2))$mode,
+      (filter_data_by_phrase(mode_data, p3))$mode
+      )
+    med_data_sorted<-create_dataframe(
+      (filter_data_by_phrase(sd_data, p1))$median,
+      (filter_data_by_phrase(sd_data, p2))$median,
+      (filter_data_by_phrase(sd_data, p3))$median
+      )
+    mean_data_sorted<-create_dataframe(
+      (filter_data_by_phrase(avg_data, p1))$average,
+      (filter_data_by_phrase(avg_data, p2))$average,
+      (filter_data_by_phrase(avg_data, p3))$average
+      )
+    
+    #... and change column names
+    colnames(sd_data_sorted) <- c("Unmanipulated", "NoMAP", "MAP")
+    colnames(range_data_sorted) <- c("Unmanipulated", "NoMAP", "MAP")
+    colnames(iqr_data_sorted) <- c("Unmanipulated", "NoMAP", "MAP")
+    
+    colnames(mode_data_sorted) <- c("Unmanipulated", "NoMAP", "MAP")
+    colnames(med_data_sorted) <- c("Unmanipulated", "NoMAP", "MAP")
+    colnames(mean_data_sorted) <- c("Unmanipulated", "NoMAP", "MAP")
+    
+    # then make excel spreadsheet where each df occupies one sheet
+    # first Create a workbook object
+    wb <- create_workbook()
+    
+    # then add data frames to separate sheets
+  add_worksheet(wb, data = sd_data_sorted, sheetName = "Sheet1")
+  add_worksheet(wb, data = range_data_sorted, sheetName = "Sheet2")
+  add_worksheet(wb, data = iqr_data_sorted, sheetName = "Sheet3")
+  add_worksheet(wb, data = mode_data_sorted, sheetName = "Sheet4")
+  add_worksheet(wb, data = med_data_sorted, sheetName = "Sheet5")
+  add_worksheet(wb, data = mean_data_sorted, sheetName = "Sheet6")
+  
+  # finally save the workbook to a file
+save_workbook(wb, "../data/230523-prism-output.xlsx")
 }
 ```
 
