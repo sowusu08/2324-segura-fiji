@@ -202,45 +202,45 @@ p2<-ggplot(targetAnimal_only, aes(x = value)) +
 ```{r, unblind-fnc}
 add_identity_unblind_column <- function(df) {
   # Define a lookup table of filename prefixes and corresponding identity_unblind values
-  prefixes <- c("Animal_A" = "Exp17_Racemic-MAP_POD7_Mouse14",
-                "Animal_C" = "Exp16_D-MAP_POD4_Mouse3",
-                "Animal_D" = "Exp15_L-MAP_Mouse3_POD4",
-                "Animal_F" = "Exp17_Racemic-MAP_POD7_Mouse11",
-                "Animal_H" = "Exp17_Racemic-MAP_POD4_Mouse2",
-                "Animal_I" = "Exp15_L-MAP_POD7_Mouse13",
-                "Animal_J" = "Exp15_L-MAP_POD4_Mouse2",
-                 "Animal_O" = "Exp17_Racemic-MAP_POD7_Mouse13",
-                "Animal_W" = "Exp17_Racemic-MAP_POD7_Mouse12",
-                "Animal_X" = "Exp14_No-MAP_POD4_Mouse2",
-                #"Animal_Y" = "Exp16_D-MAP_POD7_Mouse11",
-                "Animal_Z1" = "Exp17_Racemic-MAP_POD4_Mouse1",
-                "Animal_B" = "Exp15_POD7_Mouse11_L-MAP",
-                "Animal_P" = "Exp14_POD7_Mouse13_D-MAP",
-                #"Animal_R" = "Exp16_POD7_Mouse2_D-MAP",
-                "Animal_Z6" = "Exp16_POD7_Mouse11_D-MAP",
-                "Animal_Z8" = "Exp16_POD4_Mouse2_D-MAP",
-                 #"Animal_Z3" = "Exp15_Mouse12_POD7_LMAP",
-                "Animal_Z9" = "Exp17_POD4_Mouse3_Racemic-MAP",
+  prefixes <- c("Animal_A.t" = "Exp17_Racemic-MAP_POD7_Mouse14",
+                "Animal_C.t" = "Exp16_D-MAP_POD4_Mouse3",
+                "Animal_D.t" = "Exp15_L-MAP_Mouse3_POD4",
+                "Animal_F.t" = "Exp17_Racemic-MAP_POD7_Mouse11",
+                "Animal_H.t" = "Exp17_Racemic-MAP_POD4_Mouse2",
+                "Animal_I.t" = "Exp15_L-MAP_POD7_Mouse13",
+                "Animal_J.t" = "Exp15_L-MAP_POD4_Mouse2",
+                 "Animal_O.t" = "Exp17_Racemic-MAP_POD7_Mouse13",
+                "Animal_W.t" = "Exp17_Racemic-MAP_POD7_Mouse12",
+                "Animal_X.t" = "Exp14_No-MAP_POD4_Mouse2",
+                "Animal_Y.t" = "Exp16_D-MAP_POD7_Mouse11",
+                "Animal_Z1." = "Exp17_Racemic-MAP_POD4_Mouse1",
+                "Animal_B." = "Exp15_POD7_Mouse11_L-MAP",
+                "Animal_P." = "Exp14_POD7_Mouse13_D-MAP",
+                "Animal_R." = "Exp16_POD7_Mouse2_D-MAP",
+                "Animal_Z6." = "Exp16_POD7_Mouse11_D-MAP",
+                "Animal_Z8." = "Exp16_POD4_Mouse2_D-MAP",
+                 "Animal_Z3." = "Exp15_Mouse12_POD7_LMAP",
+                "Animal_Z9." = "Exp17_POD4_Mouse3_Racemic-MAP",
                 "Animal_Z10" = "Exp16_POD4_Mouse1_D-MAP",
                
-                "Animal_E" = "Exp14_No-MAP_POD7_Mouse11",
-                "Animal_K" = "Exp14_No-MAP_POD4_Mouse4",
-                "Animal_L" = "Exp14_No-MAP_POD7_Mouse12",
-                "Animal_M" = "Exp14_No-MAP_POD4_Mouse3",
-                "Animal_U" = "Exp14_No-MAP_POD4_Mouse1",
-                "Animal_Z2" = "Exp14_POD7_Mouse14_No-MAP",
-                "Animal_Z4" = "Exp15_POD4_Mouse1",
+                "Animal_E.t" = "Exp14_No-MAP_POD7_Mouse11",
+                "Animal_K.t" = "Exp14_No-MAP_POD4_Mouse4",
+                "Animal_L.t" = "Exp14_No-MAP_POD7_Mouse12",
+                "Animal_M.t" = "Exp14_No-MAP_POD4_Mouse3",
+                "Animal_U.t" = "Exp14_No-MAP_POD4_Mouse1",
+                "Animal_Z2.t" = "Exp14_POD7_Mouse14_No-MAP",
+                "Animal_Z4.t" = "Exp15_POD4_Mouse1",
                 
-                "Animal_G" = "Unmanipulated_PepB",
-                "Animal_N" = "Unmanip_PepB",
-                "Animal_V" = "Unmanip_B6",
-                "Animal_Z" = "UnmanipB6")
+                "Animal_G.t" = "Unmanipulated_PepB",
+                "Animal_N.t" = "Unmanip_PepB",
+                "Animal_V.t" = "Unmanip_B6",
+                "Animal_Z.t" = "UnmanipB6")
                 
                 
   
   # Use sapply to look up the identity_unblind value for each filename in the dataframe
   df$identity_unblind <- sapply(df$filename, function(x) {
-    prefix <- substr(x, 1, 8) # Extract the first 8 characters of the filename
+    prefix <- substr(x, 1, 10) # Extract the first 8 characters of the filename
     prefixes[prefix] # Look up the corresponding identity_unblind value
   })
   
@@ -369,11 +369,46 @@ calculate_mode <- function(data) {
 
 ### 3g. Write a master function that takes a function as an argument and unblinds the data frame and saves a dataframe where each column is the treatment received by the animal (nonop, op, map, etc.)
 
+
 make dataframes (excel) that can be copied and pasted into prism and put them all on one excel doc just different sheets
 
 aka one sheet for mean, median, mode, sd, range, etc.
 
 ```{r, master-fnc-prism}
+# call all metric functions on data
+
+mutate_map <- function(df){
+  return(mutate(df,treatment = case_when(
+  identity_unblind %in% c("L-MAP", "D-MAP", "Racemic-MAP") ~ "MAP",
+  identity_unblind == "No-MAP" ~ "NoMAP",
+  identity_unblind == "Unmanip" ~ "Unmanipulated",
+  TRUE ~ NA_character_
+)))
+}
+
+master <- function(data, mutate = TRUE){
+  # store all metric dataframes and add treatment labels
+  sd_data <- add_identity_unblind_column(calculate_sd(data))
+  range_data <- add_identity_unblind_column(calculate_range(data))
+  iqr_data <- add_identity_unblind_column(calculate_iqr(data))
+  
+  mode_data <- add_identity_unblind_column(calculate_mode(data))
+  med_data <- add_identity_unblind_column(calculate_median(data))
+  avg_data <- add_identity_unblind_column(calculate_averages(data))
+  
+  # then mutate so any map treatment is grouped
+  if(mutate == T){
+    sd_data <- mutate_map(sd_data)
+    range_data <- mutate_map(range_data)
+    iqr_data <- mutate_map(iqr_data)
+    
+    mode_data <- mutate_map(mode_data)
+    med_data <- mutate_map(med_data)
+    avg_data <- mutate_map(avg_data)
+  }
+  
+  # and then 
+}
 ```
 
 ## 4. Use previous function to create dataframes for all metrics
