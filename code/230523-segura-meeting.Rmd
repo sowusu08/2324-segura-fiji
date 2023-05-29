@@ -3,8 +3,7 @@ title: "050423-segura-meeting.Rmd"
 output: html_document
 date: "2023-04-05"
 ---
-
-WARNING: THIS NOTEBOOK IS SPECFIC TO EPIDERMIS for simplicity. a different notebook will address dermis
+fix 2 section
 
 ## 0a. load libraries
 ```{r, load}
@@ -170,7 +169,7 @@ p5
 
 ### 1b. zoom in on select graphs
 Only one graph example is shown
-```{r warning=FALSE}
+```{r epi-zoom warning=FALSE}
 
 # plot using ggplot
 # variables that chaneg are `long*[]` and `Animal_*`
@@ -195,6 +194,162 @@ p2<-ggplot(targetAnimal_only, aes(x = value)) +
   ggsave("../visualizations/shape-center-spread/epiderm/Animal_A-micron-length-spread-standardView.jpg", plot=p2, dpi = 300, width = 6, height = 4, units = "in")
 
 ```
+
+
+## 2. visualize spread of each animal's DERMIS lengths...
+- use same binwidth and same axes
+```{r, spread-derm-micron-data}
+df_set1<-all_dermis_lengths_in_microns[,1:6]
+df_set2<-all_dermis_lengths_in_microns[,7:12]
+df_set3<-all_dermis_lengths_in_microns[,13:18]
+df_set4<-all_dermis_lengths_in_microns[,19:24]
+df_set5<-all_dermis_lengths_in_microns[,25:30]
+
+# convert data to long format using tidyr::pivot_longer()
+long1 <- tidyr::pivot_longer(df_set1, everything())
+long2 <- tidyr::pivot_longer(df_set2, everything())
+long3 <- tidyr::pivot_longer(df_set3, everything())
+long4 <- tidyr::pivot_longer(df_set4, everything())
+long5 <- tidyr::pivot_longer(df_set5, everything())
+```
+
+### 2a. on scale of ?-? microns
+max appears to be 196.5
+```{r, spread-derm-micron-histgraph}
+# set y-axis range
+x_range <- c(0,197)
+
+# plot using ggplot and facet_wrap()
+p1<-ggplot(long1[], aes(x = value)) +
+  geom_histogram(color="black", fill="white", binwidth = 2) +
+  facet_wrap(~ name, scales = "fixed") +
+  labs(x = "Pixel Value", y = "Frequency")+
+  scale_x_continuous(limits = x_range, expand = c(0, 0))+
+  theme(axis.title.x = element_text())
+p1
+#ggsave("animal-pixel-lenght-spread1.jpg", plot = p1, dpi = 300, width = 6, height = 4, units = "in")
+
+p2<-ggplot(long2[], aes(x = value)) +
+  geom_histogram(color="black", fill="white", binwidth = 2) +
+  facet_wrap(~ name, scales = "fixed") +
+  labs(x = "Pixel Value", y = "Frequency")+
+  scale_x_continuous(limits = x_range, expand = c(0, 0))+
+  theme(axis.title.x = element_text())
+p2
+#ggsave("animal-pixel-lenght-spread2.jpg", plot = p2, dpi = 300, width = 6, height = 4, units = "in")
+
+p3<-ggplot(long3[], aes(x = value)) +
+  geom_histogram(color="black", fill="white", binwidth = 2) +
+  facet_wrap(~ name, scales = "fixed") +
+  labs(x = "Pixel Value", y = "Frequency")+
+  scale_x_continuous(limits = x_range, expand = c(0, 0))+
+  theme(axis.title.x = element_text())
+p3
+#ggsave("animal-pixel-lenght-spread3.jpg", plot = p3, dpi = 300, width = 6, height = 4, units = "in")
+
+p4<-ggplot(long4[], aes(x = value)) +
+  geom_histogram(color="black", fill="white", binwidth = 2) +
+  facet_wrap(~ name, scales = "fixed") +
+  labs(x = "Pixel Value", y = "Frequency")+
+  scale_x_continuous(limits = x_range, expand = c(0, 0))+
+  theme(axis.title.x = element_text())
+p4
+#ggsave("animal-pixel-lenght-spread4.jpg", plot = p4, dpi = 300, width = 6, height = 4, units = "in")
+
+p5<-ggplot(long5[], aes(x = value)) +
+  geom_histogram(color="black", fill="white", binwidth = 2) +
+  facet_wrap(~ name, scales = "fixed") +
+  labs(x = "Pixel Value", y = "Frequency")+
+  scale_x_continuous(limits = x_range, expand = c(0, 0))+
+  theme(axis.title.x = element_text()) 
+p5
+#ggsave("animal-pixel-lenght-spread5.jpg", plot = p5, dpi = 300, width = 6, height = 4, units = "in")
+```
+
+```{r, spread-derm-micron-densitygraph}
+# set y-axis range
+x_range <- c(0,197)
+
+# plot using ggplot and facet_wrap()
+p1<-ggplot(long1[], aes(x = value)) +
+  geom_density(color="black", fill="darkgrey") +
+  facet_wrap(~ name, scales = "fixed") +
+   theme_minimal()+
+  labs(x = "Pixel Value", y = "Frequency")+
+  scale_x_continuous(limits = x_range, expand = c(0, 0))+
+  theme(axis.title.x = element_text())
+p1
+#ggsave("../visualizations/shape-center-spread/epiderm/all_animals-micron-length-spread1.jpg", plot = p1, dpi = 300, width = 6, height = 4, units = "in")
+
+p2<-ggplot(long2[], aes(x = value)) +
+  geom_density(color="black", fill="darkgrey") +
+  facet_wrap(~ name, scales = "fixed") +
+   theme_minimal()+
+  labs(x = "Pixel Value", y = "Frequency")+
+  scale_x_continuous(limits = x_range, expand = c(0, 0))+
+  theme(axis.title.x = element_text())
+p2
+#ggsave("../visualizations/shape-center-spread/epiderm/all_animals-micron-length-spread2.jpg", plot = p2, dpi = 300, width = 6, height = 4, units = "in")
+
+p3<-ggplot(long3[], aes(x = value)) +
+  geom_density(color="black", fill="darkgrey") +
+  facet_wrap(~ name, scales = "fixed") +
+   theme_minimal()+
+  labs(x = "Pixel Value", y = "Frequency")+
+  scale_x_continuous(limits = x_range, expand = c(0, 0))+
+  theme(axis.title.x = element_text())
+p3
+#ggsave("../visualizations/shape-center-spread/epiderm/all_animals-micron-length-spread3.jpg", plot = p3, dpi = 300, width = 6, height = 4, units = "in")
+
+p4<-ggplot(long4[], aes(x = value)) +
+  geom_density(color="black", fill="darkgrey") +
+  facet_wrap(~ name, scales = "fixed") +
+   theme_minimal()+
+  labs(x = "Pixel Value", y = "Frequency")+
+  scale_x_continuous(limits = x_range, expand = c(0, 0))+
+  theme(axis.title.x = element_text())
+p4
+#ggsave("../visualizations/shape-center-spread/epiderm/all_animals-micron-length-spread4.jpg", plot = p4, dpi = 300, width = 6, height = 4, units = "in")
+
+p5<-ggplot(long5[], aes(x = value)) +
+  geom_density(color="black", fill="darkgrey") +
+  facet_wrap(~ name, scales = "fixed") +
+   theme_minimal()+
+  labs(x = "Pixel Value", y = "Frequency")+
+  scale_x_continuous(limits = x_range, expand = c(0, 0))+
+  theme(axis.title.x = element_text())
+p5
+#ggsave("../visualizations/shape-center-spread/epiderm/all_animals-micron-length-spread5.jpg", plot = p5, dpi = 300, width = 6, height = 4, units = "in")
+```
+
+### 2b. zoom in on select graphs
+Only one graph example is shown
+```{r, derm-zoom warning=FALSE}
+
+# plot using ggplot
+# variables that chaneg are `long*[]` and `Animal_*`
+targetAnimal_only <- long1[] %>% filter(startsWith(name, "Animal_A."))
+
+p1<-ggplot(targetAnimal_only, aes(x = value)) +
+  geom_density(fill = "blue", alpha = 0.5) +
+  theme_minimal()+
+  facet_wrap(~ name, scales = "fixed") +
+  labs(x = "Pixel Value", y = "Frequency")+
+  scale_x_continuous(limits = c(0,125), expand = c(0, 0))+
+  theme(axis.title.x = element_text())
+  ggsave("../visualizations/shape-center-spread/epiderm/Animal_A-micron-length-spread-zoomedView.jpg", plot=p1, dpi = 300, width = 6, height = 4, units = "in")
+
+p2<-ggplot(targetAnimal_only, aes(x = value)) +
+  geom_density(fill = "grey", color="transparent", alpha = 0.5) +
+  theme_minimal()+
+  facet_wrap(~ name, scales = "fixed") +
+  labs(x = "Pixel Value", y = "Frequency")+
+  scale_x_continuous(limits = c(0,125), expand = c(0, 0))+
+  theme(axis.title.x = element_text())
+  ggsave("../visualizations/shape-center-spread/epiderm/Animal_A-micron-length-spread-standardView.jpg", plot=p2, dpi = 300, width = 6, height = 4, units = "in")
+
+```
+
 
 ## 3. FUNCTIONS for calculating metrics 
 
