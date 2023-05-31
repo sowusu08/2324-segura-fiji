@@ -66,47 +66,47 @@ x_range <- c(0,125)
 p1<-ggplot(long1[], aes(x = value)) +
   geom_histogram(color="black", fill="white", binwidth = 2) +
   facet_wrap(~ name, scales = "fixed") +
-  labs(x = "Pixel Value", y = "Frequency")+
+  labs(x = "Micron Value", y = "Frequency")+
   scale_x_continuous(limits = x_range, expand = c(0, 0))+
   theme(axis.title.x = element_text())
 p1
-#ggsave("animal-pixel-lenght-spread1.jpg", plot = p1, dpi = 300, width = 6, height = 4, units = "in")
+#ggsave("animal-micron-lenght-spread1.jpg", plot = p1, dpi = 300, width = 6, height = 4, units = "in")
 
 p2<-ggplot(long2[], aes(x = value)) +
   geom_histogram(color="black", fill="white", binwidth = 2) +
   facet_wrap(~ name, scales = "fixed") +
-  labs(x = "Pixel Value", y = "Frequency")+
+  labs(x = "Micron Value", y = "Frequency")+
   scale_x_continuous(limits = x_range, expand = c(0, 0))+
   theme(axis.title.x = element_text())
 p2
-#ggsave("animal-pixel-lenght-spread2.jpg", plot = p2, dpi = 300, width = 6, height = 4, units = "in")
+#ggsave("animal-micron-lenght-spread2.jpg", plot = p2, dpi = 300, width = 6, height = 4, units = "in")
 
 p3<-ggplot(long3[], aes(x = value)) +
   geom_histogram(color="black", fill="white", binwidth = 2) +
   facet_wrap(~ name, scales = "fixed") +
-  labs(x = "Pixel Value", y = "Frequency")+
+  labs(x = "Micron Value", y = "Frequency")+
   scale_x_continuous(limits = x_range, expand = c(0, 0))+
   theme(axis.title.x = element_text())
 p3
-#ggsave("animal-pixel-lenght-spread3.jpg", plot = p3, dpi = 300, width = 6, height = 4, units = "in")
+#ggsave("animal-micron-lenght-spread3.jpg", plot = p3, dpi = 300, width = 6, height = 4, units = "in")
 
 p4<-ggplot(long4[], aes(x = value)) +
   geom_histogram(color="black", fill="white", binwidth = 2) +
   facet_wrap(~ name, scales = "fixed") +
-  labs(x = "Pixel Value", y = "Frequency")+
+  labs(x = "Micron Value", y = "Frequency")+
   scale_x_continuous(limits = x_range, expand = c(0, 0))+
   theme(axis.title.x = element_text())
 p4
-#ggsave("animal-pixel-lenght-spread4.jpg", plot = p4, dpi = 300, width = 6, height = 4, units = "in")
+#ggsave("animal-micron-lenght-spread4.jpg", plot = p4, dpi = 300, width = 6, height = 4, units = "in")
 
 p5<-ggplot(long5[], aes(x = value)) +
   geom_histogram(color="black", fill="white", binwidth = 2) +
   facet_wrap(~ name, scales = "fixed") +
-  labs(x = "Pixel Value", y = "Frequency")+
+  labs(x = "Micron Value", y = "Frequency")+
   scale_x_continuous(limits = x_range, expand = c(0, 0))+
   theme(axis.title.x = element_text()) 
 p5
-#ggsave("animal-pixel-lenght-spread5.jpg", plot = p5, dpi = 300, width = 6, height = 4, units = "in")
+#ggsave("animal-micron-lenght-spread5.jpg", plot = p5, dpi = 300, width = 6, height = 4, units = "in")
 ```
 
 ```{r, spread-epi-micron-densitygraph}
@@ -118,7 +118,7 @@ p1<-ggplot(long1[], aes(x = value)) +
   geom_density(color="black", fill="darkgrey") +
   facet_wrap(~ name, scales = "fixed") +
    theme_minimal()+
-  labs(x = "Pixel Value", y = "Frequency")+
+  labs(x = "Micron Value", y = "Frequency")+
   scale_x_continuous(limits = x_range, expand = c(0, 0))+
   theme(axis.title.x = element_text())
 p1
@@ -128,7 +128,7 @@ p2<-ggplot(long2[], aes(x = value)) +
   geom_density(color="black", fill="darkgrey") +
   facet_wrap(~ name, scales = "fixed") +
    theme_minimal()+
-  labs(x = "Pixel Value", y = "Frequency")+
+  labs(x = "Micron Value", y = "Frequency")+
   scale_x_continuous(limits = x_range, expand = c(0, 0))+
   theme(axis.title.x = element_text())
 p2
@@ -138,7 +138,7 @@ p3<-ggplot(long3[], aes(x = value)) +
   geom_density(color="black", fill="darkgrey") +
   facet_wrap(~ name, scales = "fixed") +
    theme_minimal()+
-  labs(x = "Pixel Value", y = "Frequency")+
+  labs(x = "Micron Value", y = "Frequency")+
   scale_x_continuous(limits = x_range, expand = c(0, 0))+
   theme(axis.title.x = element_text())
 p3
@@ -148,7 +148,7 @@ p4<-ggplot(long4[], aes(x = value)) +
   geom_density(color="black", fill="darkgrey") +
   facet_wrap(~ name, scales = "fixed") +
    theme_minimal()+
-  labs(x = "Pixel Value", y = "Frequency")+
+  labs(x = "Micron Value", y = "Frequency")+
   scale_x_continuous(limits = x_range, expand = c(0, 0))+
   theme(axis.title.x = element_text())
 p4
@@ -158,7 +158,7 @@ p5<-ggplot(long5[], aes(x = value)) +
   geom_density(color="black", fill="darkgrey") +
   facet_wrap(~ name, scales = "fixed") +
    theme_minimal()+
-  labs(x = "Pixel Value", y = "Frequency")+
+  labs(x = "Micron Value", y = "Frequency")+
   scale_x_continuous(limits = x_range, expand = c(0, 0))+
   theme(axis.title.x = element_text())
 p5
@@ -177,7 +177,7 @@ p1<-ggplot(targetAnimal_only, aes(x = value)) +
   geom_density(fill = "blue", alpha = 0.5) +
   theme_minimal()+
   facet_wrap(~ name, scales = "fixed") +
-  labs(x = "Pixel Value", y = "Frequency")+
+  labs(x = "Micron Value", y = "Frequency")+
   scale_x_continuous(limits = c(0,125), expand = c(0, 0))+
   theme(axis.title.x = element_text())
   ggsave("../visualizations/shape-center-spread/epiderm/Animal_A-micron-length-spread-zoomedView.jpg", plot=p1, dpi = 300, width = 6, height = 4, units = "in")
@@ -186,7 +186,7 @@ p2<-ggplot(targetAnimal_only, aes(x = value)) +
   geom_density(fill = "grey", color="transparent", alpha = 0.5) +
   theme_minimal()+
   facet_wrap(~ name, scales = "fixed") +
-  labs(x = "Pixel Value", y = "Frequency")+
+  labs(x = "Micron Value", y = "Frequency")+
   scale_x_continuous(limits = c(0,125), expand = c(0, 0))+
   theme(axis.title.x = element_text())
   ggsave("../visualizations/shape-center-spread/epiderm/Animal_A-micron-length-spread-standardView.jpg", plot=p2, dpi = 300, width = 6, height = 4, units = "in")
@@ -221,47 +221,47 @@ x_range <- c(0,197)
 p1<-ggplot(long1[], aes(x = value)) +
   geom_histogram(color="black", fill="white", binwidth = 2) +
   facet_wrap(~ name, scales = "fixed") +
-  labs(x = "Pixel Value", y = "Frequency")+
+  labs(x = "Micron Value", y = "Frequency")+
   scale_x_continuous(limits = x_range, expand = c(0, 0))+
   theme(axis.title.x = element_text())
 p1
-#ggsave("animal-pixel-lenght-spread1.jpg", plot = p1, dpi = 300, width = 6, height = 4, units = "in")
+#ggsave("animal-micron-lenght-spread1.jpg", plot = p1, dpi = 300, width = 6, height = 4, units = "in")
 
 p2<-ggplot(long2[], aes(x = value)) +
   geom_histogram(color="black", fill="white", binwidth = 2) +
   facet_wrap(~ name, scales = "fixed") +
-  labs(x = "Pixel Value", y = "Frequency")+
+  labs(x = "Micron Value", y = "Frequency")+
   scale_x_continuous(limits = x_range, expand = c(0, 0))+
   theme(axis.title.x = element_text())
 p2
-#ggsave("animal-pixel-lenght-spread2.jpg", plot = p2, dpi = 300, width = 6, height = 4, units = "in")
+#ggsave("animal-micron-lenght-spread2.jpg", plot = p2, dpi = 300, width = 6, height = 4, units = "in")
 
 p3<-ggplot(long3[], aes(x = value)) +
   geom_histogram(color="black", fill="white", binwidth = 2) +
   facet_wrap(~ name, scales = "fixed") +
-  labs(x = "Pixel Value", y = "Frequency")+
+  labs(x = "Micron Value", y = "Frequency")+
   scale_x_continuous(limits = x_range, expand = c(0, 0))+
   theme(axis.title.x = element_text())
 p3
-#ggsave("animal-pixel-lenght-spread3.jpg", plot = p3, dpi = 300, width = 6, height = 4, units = "in")
+#ggsave("animal-micron-lenght-spread3.jpg", plot = p3, dpi = 300, width = 6, height = 4, units = "in")
 
 p4<-ggplot(long4[], aes(x = value)) +
   geom_histogram(color="black", fill="white", binwidth = 2) +
   facet_wrap(~ name, scales = "fixed") +
-  labs(x = "Pixel Value", y = "Frequency")+
+  labs(x = "Micron Value", y = "Frequency")+
   scale_x_continuous(limits = x_range, expand = c(0, 0))+
   theme(axis.title.x = element_text())
 p4
-#ggsave("animal-pixel-lenght-spread4.jpg", plot = p4, dpi = 300, width = 6, height = 4, units = "in")
+#ggsave("animal-micron-lenght-spread4.jpg", plot = p4, dpi = 300, width = 6, height = 4, units = "in")
 
 p5<-ggplot(long5[], aes(x = value)) +
   geom_histogram(color="black", fill="white", binwidth = 2) +
   facet_wrap(~ name, scales = "fixed") +
-  labs(x = "Pixel Value", y = "Frequency")+
+  labs(x = "Micron Value", y = "Frequency")+
   scale_x_continuous(limits = x_range, expand = c(0, 0))+
   theme(axis.title.x = element_text()) 
 p5
-#ggsave("animal-pixel-lenght-spread5.jpg", plot = p5, dpi = 300, width = 6, height = 4, units = "in")
+#ggsave("animal-micron-lenght-spread5.jpg", plot = p5, dpi = 300, width = 6, height = 4, units = "in")
 ```
 
 ```{r, spread-derm-micron-densitygraph}
@@ -273,7 +273,7 @@ p1<-ggplot(long1[], aes(x = value)) +
   geom_density(color="black", fill="darkgrey") +
   facet_wrap(~ name, scales = "fixed") +
    theme_minimal()+
-  labs(x = "Pixel Value", y = "Frequency")+
+  labs(x = "Micron Value", y = "Frequency")+
   scale_x_continuous(limits = x_range, expand = c(0, 0))+
   theme(axis.title.x = element_text())
 p1
@@ -283,7 +283,7 @@ p2<-ggplot(long2[], aes(x = value)) +
   geom_density(color="black", fill="darkgrey") +
   facet_wrap(~ name, scales = "fixed") +
    theme_minimal()+
-  labs(x = "Pixel Value", y = "Frequency")+
+  labs(x = "Micron Value", y = "Frequency")+
   scale_x_continuous(limits = x_range, expand = c(0, 0))+
   theme(axis.title.x = element_text())
 p2
@@ -293,7 +293,7 @@ p3<-ggplot(long3[], aes(x = value)) +
   geom_density(color="black", fill="darkgrey") +
   facet_wrap(~ name, scales = "fixed") +
    theme_minimal()+
-  labs(x = "Pixel Value", y = "Frequency")+
+  labs(x = "Micron Value", y = "Frequency")+
   scale_x_continuous(limits = x_range, expand = c(0, 0))+
   theme(axis.title.x = element_text())
 p3
@@ -303,7 +303,7 @@ p4<-ggplot(long4[], aes(x = value)) +
   geom_density(color="black", fill="darkgrey") +
   facet_wrap(~ name, scales = "fixed") +
    theme_minimal()+
-  labs(x = "Pixel Value", y = "Frequency")+
+  labs(x = "Micron Value", y = "Frequency")+
   scale_x_continuous(limits = x_range, expand = c(0, 0))+
   theme(axis.title.x = element_text())
 p4
@@ -313,7 +313,7 @@ p5<-ggplot(long5[], aes(x = value)) +
   geom_density(color="black", fill="darkgrey") +
   facet_wrap(~ name, scales = "fixed") +
    theme_minimal()+
-  labs(x = "Pixel Value", y = "Frequency")+
+  labs(x = "Micron Value", y = "Frequency")+
   scale_x_continuous(limits = x_range, expand = c(0, 0))+
   theme(axis.title.x = element_text())
 p5
@@ -332,7 +332,7 @@ p1<-ggplot(targetAnimal_only, aes(x = value)) +
   geom_density(fill = "blue", alpha = 0.5) +
   theme_minimal()+
   facet_wrap(~ name, scales = "fixed") +
-  labs(x = "Pixel Value", y = "Frequency")+
+  labs(x = "Micron Value", y = "Frequency")+
   scale_x_continuous(limits = c(0,30), expand = c(0, 0))+
   theme(axis.title.x = element_text())
   ggsave("../visualizations/shape-center-spread/derm/Animal_Z9-micron-length-spread-zoomedView.jpg", plot=p1, dpi = 300, width = 6, height = 4, units = "in")
@@ -341,7 +341,7 @@ p2<-ggplot(targetAnimal_only, aes(x = value)) +
   geom_density(fill = "grey", color="transparent", alpha = 0.5) +
   theme_minimal()+
   facet_wrap(~ name, scales = "fixed") +
-  labs(x = "Pixel Value", y = "Frequency")+
+  labs(x = "Micron Value", y = "Frequency")+
   scale_x_continuous(limits = c(0,197), expand = c(0, 0))+
   theme(axis.title.x = element_text())
   ggsave("../visualizations/shape-center-spread/derm/Animal_Z9-micron-length-spread-standardView.jpg", plot=p2, dpi = 300, width = 6, height = 4, units = "in")
@@ -728,4 +728,61 @@ saveWorkbook(wb, paste0("../data/230523-prism-", type, "-output.xlsx"))
 ```{r, use-master-fnc}
 master(all_dermis_lengths_in_microns, type="dermis")
 master(all_epidermis_lengths_in_microns, type="epidermis")
+```
+
+## 5. Compare shapes of map, nomap, unmanip for ALL animals using multiple density curve plot
+use averages from each animal
+```{r, all-animals-shape-function}
+create_density_plot <- function(df1, df2) {
+  # Extract the second column values from each data frame
+  values1 <- df1[[2]]
+  values2 <- df2[[2]]
+  
+  # Combine the values into a single data frame for plotting
+  combined_data <- data.frame(Values = c(values1, values2),
+                              Group = c(rep("Data Frame 1", length(values1)),
+                                        rep("Data Frame 2", length(values2))))
+  
+  # Create the density plot using ggplot2
+  density_plot <- ggplot(combined_data, aes(x = Values, fill = Group)) +
+    geom_density(alpha = 0.5) +
+    scale_fill_manual(values = c("blue", "red")) +
+    labs(x = "Values", y = "Density", title = "Density Plot") +
+    theme_minimal()
+  
+  # Display the plot
+  print(density_plot)
+}
+```
+
+```{r, all-animals-shape-plot}
+create_density_plot(calculate_averages(all_dermis_lengths_in_microns), calculate_averages(all_epidermis_lengths_in_microns))
+```
+
+use all un-averaged data
+```{r, all-animals-shape-function}
+create_density_plot <- function(df1, df2) {
+  # Extract the second column values from each data frame
+  values1 <- df1[[2]]
+  values2 <- df2[[2]]
+  
+  # Combine the values into a single data frame for plotting
+  combined_data <- data.frame(Values = c(values1, values2),
+                              Group = c(rep("Data Frame 1", length(values1)),
+                                        rep("Data Frame 2", length(values2))))
+  
+  # Create the density plot using ggplot2
+  density_plot <- ggplot(combined_data, aes(x = Values, fill = Group)) +
+    geom_density(alpha = 0.5) +
+    scale_fill_manual(values = c("blue", "red")) +
+    labs(x = "Values", y = "Density", title = "Density Plot") +
+    theme_minimal()
+  
+  # Display the plot
+  print(density_plot)
+}
+```
+
+```{r, all-animals-shape-plot}
+create_density_plot(calculate_averages(all_dermis_lengths_in_microns), calculate_averages(all_epidermis_lengths_in_microns))
 ```
