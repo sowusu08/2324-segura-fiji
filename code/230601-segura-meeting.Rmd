@@ -168,506 +168,14 @@ labelled_dermis_auc <- data.frame(dermis_auc, colnames(all_dermis_lengths_in_mic
 colnames(labelled_dermis_auc) <- c("auc", "animal")
 colnames(labelled_epidermis_auc) <- c("auc", "animal")
 
-labelled_dermis_auc$treatment <- add_identity_unblind_column(labelled_dermis_auc)
-labelled_epidermis_auc$treatment <- add_identity_unblind_column(labelled_epidermis_auc)
+labelled_dermis_auc$identity_unblind <- add_identity_unblind_column(labelled_dermis_auc)
+labelled_epidermis_auc$identity_unblind <- add_identity_unblind_column(labelled_epidermis_auc)
 ```
 
-## 1. create density plots for each animal's EPIDERMIS lengths...
-- use same binwidth and same axes
-```{r, spread-epi-micron-data}
-df_set1<-all_epidermis_lengths_in_microns[,1:6]
-df_set2<-all_epidermis_lengths_in_microns[,7:12]
-df_set3<-all_epidermis_lengths_in_microns[,13:18]
-df_set4<-all_epidermis_lengths_in_microns[,19:24]
-df_set5<-all_epidermis_lengths_in_microns[,25:30]
-
-# convert data to long format using tidyr::pivot_longer()
-long1 <- tidyr::pivot_longer(df_set1, everything())
-long2 <- tidyr::pivot_longer(df_set2, everything())
-long3 <- tidyr::pivot_longer(df_set3, everything())
-long4 <- tidyr::pivot_longer(df_set4, everything())
-long5 <- tidyr::pivot_longer(df_set5, everything())
-```
-
-### 1a. create plots
-```{r, spread-epi-micron-histgraph}
-
-# plot using ggplot and facet_wrap()
-p1<-ggplot(long1[], aes(x = value)) +
-  geom_histogram(color="black", fill="white", binwidth = 2) +
-  facet_wrap(~ name, scales = "fixed") +
-  labs(x = "Micron Value", y = "Frequency")+
-  scale_x_continuous(limits = x_range, expand = c(0, 0))+
-  theme(axis.title.x = element_text())
-p1
-#ggsave("animal-micron-lenght-spread1.jpg", plot = p1, dpi = 300, width = 6, height = 4, units = "in")
-
-p2<-ggplot(long2[], aes(x = value)) +
-  geom_histogram(color="black", fill="white", binwidth = 2) +
-  facet_wrap(~ name, scales = "fixed") +
-  labs(x = "Micron Value", y = "Frequency")+
-  scale_x_continuous(limits = x_range, expand = c(0, 0))+
-  theme(axis.title.x = element_text())
-p2
-#ggsave("animal-micron-lenght-spread2.jpg", plot = p2, dpi = 300, width = 6, height = 4, units = "in")
-
-p3<-ggplot(long3[], aes(x = value)) +
-  geom_histogram(color="black", fill="white", binwidth = 2) +
-  facet_wrap(~ name, scales = "fixed") +
-  labs(x = "Micron Value", y = "Frequency")+
-  scale_x_continuous(limits = x_range, expand = c(0, 0))+
-  theme(axis.title.x = element_text())
-p3
-#ggsave("animal-micron-lenght-spread3.jpg", plot = p3, dpi = 300, width = 6, height = 4, units = "in")
-
-p4<-ggplot(long4[], aes(x = value)) +
-  geom_histogram(color="black", fill="white", binwidth = 2) +
-  facet_wrap(~ name, scales = "fixed") +
-  labs(x = "Micron Value", y = "Frequency")+
-  scale_x_continuous(limits = x_range, expand = c(0, 0))+
-  theme(axis.title.x = element_text())
-p4
-#ggsave("animal-micron-lenght-spread4.jpg", plot = p4, dpi = 300, width = 6, height = 4, units = "in")
-
-p5<-ggplot(long5[], aes(x = value)) +
-  geom_histogram(color="black", fill="white", binwidth = 2) +
-  facet_wrap(~ name, scales = "fixed") +
-  labs(x = "Micron Value", y = "Frequency")+
-  scale_x_continuous(limits = x_range, expand = c(0, 0))+
-  theme(axis.title.x = element_text()) 
-p5
-#ggsave("animal-micron-lenght-spread5.jpg", plot = p5, dpi = 300, width = 6, height = 4, units = "in")
-```
-
-```{r, spread-epi-micron-densitygraph}
-# set y-axis range
-x_range <- c(0,125)
-
-# plot using ggplot and facet_wrap()
-p1<-ggplot(long1[], aes(x = value)) +
-  geom_density(color="black", fill="darkgrey") +
-  facet_wrap(~ name, scales = "fixed") +
-   theme_minimal()+
-  labs(x = "Micron Value", y = "Frequency")+
-  scale_x_continuous(limits = x_range, expand = c(0, 0))+
-  theme(axis.title.x = element_text())
-p1
-#ggsave("../visualizations/shape-center-spread/epiderm/all_animals-micron-length-spread1.jpg", plot = p1, dpi = 300, width = 6, height = 4, units = "in")
-
-p2<-ggplot(long2[], aes(x = value)) +
-  geom_density(color="black", fill="darkgrey") +
-  facet_wrap(~ name, scales = "fixed") +
-   theme_minimal()+
-  labs(x = "Micron Value", y = "Frequency")+
-  scale_x_continuous(limits = x_range, expand = c(0, 0))+
-  theme(axis.title.x = element_text())
-p2
-#ggsave("../visualizations/shape-center-spread/epiderm/all_animals-micron-length-spread2.jpg", plot = p2, dpi = 300, width = 6, height = 4, units = "in")
-
-p3<-ggplot(long3[], aes(x = value)) +
-  geom_density(color="black", fill="darkgrey") +
-  facet_wrap(~ name, scales = "fixed") +
-   theme_minimal()+
-  labs(x = "Micron Value", y = "Frequency")+
-  scale_x_continuous(limits = x_range, expand = c(0, 0))+
-  theme(axis.title.x = element_text())
-p3
-#ggsave("../visualizations/shape-center-spread/epiderm/all_animals-micron-length-spread3.jpg", plot = p3, dpi = 300, width = 6, height = 4, units = "in")
-
-p4<-ggplot(long4[], aes(x = value)) +
-  geom_density(color="black", fill="darkgrey") +
-  facet_wrap(~ name, scales = "fixed") +
-   theme_minimal()+
-  labs(x = "Micron Value", y = "Frequency")+
-  scale_x_continuous(limits = x_range, expand = c(0, 0))+
-  theme(axis.title.x = element_text())
-p4
-#ggsave("../visualizations/shape-center-spread/epiderm/all_animals-micron-length-spread4.jpg", plot = p4, dpi = 300, width = 6, height = 4, units = "in")
-
-p5<-ggplot(long5[], aes(x = value)) +
-  geom_density(color="black", fill="darkgrey") +
-  facet_wrap(~ name, scales = "fixed") +
-   theme_minimal()+
-  labs(x = "Micron Value", y = "Frequency")+
-  scale_x_continuous(limits = x_range, expand = c(0, 0))+
-  theme(axis.title.x = element_text())
-p5
-#ggsave("../visualizations/shape-center-spread/epiderm/all_animals-micron-length-spread5.jpg", plot = p5, dpi = 300, width = 6, height = 4, units = "in")
-```
-
-### 1b. zoom in on select graphs
-Only one graph example is shown
-```{r epi-zoom warning=FALSE}
-
-# plot using ggplot
-# variables that chaneg are `long*[]` and `Animal_*`
-targetAnimal_only <- long1[] %>% filter(startsWith(name, "Animal_A."))
-
-p1<-ggplot(targetAnimal_only, aes(x = value)) +
-  geom_density(fill = "blue", alpha = 0.5) +
-  theme_minimal()+
-  facet_wrap(~ name, scales = "fixed") +
-  labs(x = "Micron Value", y = "Frequency")+
-  scale_x_continuous(limits = c(0,125), expand = c(0, 0))+
-  theme(axis.title.x = element_text())
-  ggsave("../visualizations/shape-center-spread/epiderm/Animal_A-micron-length-spread-zoomedView.jpg", plot=p1, dpi = 300, width = 6, height = 4, units = "in")
-
-p2<-ggplot(targetAnimal_only, aes(x = value)) +
-  geom_density(fill = "grey", color="transparent", alpha = 0.5) +
-  theme_minimal()+
-  facet_wrap(~ name, scales = "fixed") +
-  labs(x = "Micron Value", y = "Frequency")+
-  scale_x_continuous(limits = c(0,125), expand = c(0, 0))+
-  theme(axis.title.x = element_text())
-  ggsave("../visualizations/shape-center-spread/epiderm/Animal_A-micron-length-spread-standardView.jpg", plot=p2, dpi = 300, width = 6, height = 4, units = "in")
-
-```
-
-
-## 2. visualize spread of each animal's DERMIS lengths...
-- use same binwidth and same axes
-```{r, spread-derm-micron-data}
-df_set1<-all_dermis_lengths_in_microns[,1:6]
-df_set2<-all_dermis_lengths_in_microns[,7:12]
-df_set3<-all_dermis_lengths_in_microns[,13:18]
-df_set4<-all_dermis_lengths_in_microns[,19:24]
-df_set5<-all_dermis_lengths_in_microns[,25:30]
-
-# convert data to long format using tidyr::pivot_longer()
-long1 <- tidyr::pivot_longer(df_set1, everything())
-long2 <- tidyr::pivot_longer(df_set2, everything())
-long3 <- tidyr::pivot_longer(df_set3, everything())
-long4 <- tidyr::pivot_longer(df_set4, everything())
-long5 <- tidyr::pivot_longer(df_set5, everything())
-```
-
-### 2a. on scale of 0-264? microns
-max appears to be 196.5
-```{r, spread-derm-micron-histgraph}
-# set y-axis range
-x_range <- c(0,275)
-
-# plot using ggplot and facet_wrap()
-p1<-ggplot(long1[], aes(x = value)) +
-  geom_histogram(color="black", fill="white", binwidth = 2) +
-  facet_wrap(~ name, scales = "fixed") +
-  labs(x = "Micron Value", y = "Frequency")+
-  scale_x_continuous(limits = x_range, expand = c(0, 0))+
-  theme(axis.title.x = element_text())
-p1
-#ggsave("animal-micron-lenght-spread1.jpg", plot = p1, dpi = 300, width = 6, height = 4, units = "in")
-
-p2<-ggplot(long2[], aes(x = value)) +
-  geom_histogram(color="black", fill="white", binwidth = 2) +
-  facet_wrap(~ name, scales = "fixed") +
-  labs(x = "Micron Value", y = "Frequency")+
-  scale_x_continuous(limits = x_range, expand = c(0, 0))+
-  theme(axis.title.x = element_text())
-p2
-#ggsave("animal-micron-lenght-spread2.jpg", plot = p2, dpi = 300, width = 6, height = 4, units = "in")
-
-p3<-ggplot(long3[], aes(x = value)) +
-  geom_histogram(color="black", fill="white", binwidth = 2) +
-  facet_wrap(~ name, scales = "fixed") +
-  labs(x = "Micron Value", y = "Frequency")+
-  scale_x_continuous(limits = x_range, expand = c(0, 0))+
-  theme(axis.title.x = element_text())
-p3
-#ggsave("animal-micron-lenght-spread3.jpg", plot = p3, dpi = 300, width = 6, height = 4, units = "in")
-
-p4<-ggplot(long4[], aes(x = value)) +
-  geom_histogram(color="black", fill="white", binwidth = 2) +
-  facet_wrap(~ name, scales = "fixed") +
-  labs(x = "Micron Value", y = "Frequency")+
-  scale_x_continuous(limits = x_range, expand = c(0, 0))+
-  theme(axis.title.x = element_text())
-p4
-#ggsave("animal-micron-lenght-spread4.jpg", plot = p4, dpi = 300, width = 6, height = 4, units = "in")
-
-p5<-ggplot(long5[], aes(x = value)) +
-  geom_histogram(color="black", fill="white", binwidth = 2) +
-  facet_wrap(~ name, scales = "fixed") +
-  labs(x = "Micron Value", y = "Frequency")+
-  scale_x_continuous(limits = x_range, expand = c(0, 0))+
-  theme(axis.title.x = element_text()) 
-p5
-#ggsave("animal-micron-lenght-spread5.jpg", plot = p5, dpi = 300, width = 6, height = 4, units = "in")
-```
-
-```{r, spread-derm-micron-densitygraph}
-# set y-axis range
-x_range <- c(0,275)
-
-# plot using ggplot and facet_wrap()
-p1<-ggplot(long1[], aes(x = value)) +
-  geom_density(color="black", fill="darkgrey") +
-  facet_wrap(~ name, scales = "fixed") +
-   theme_minimal()+
-  labs(x = "Micron Value", y = "Frequency")+
-  scale_x_continuous(limits = x_range, expand = c(0, 0))+
-  theme(axis.title.x = element_text())
-p1
-ggsave("../visualizations/shape-center-spread/derm/all_animals-micron-length-spread1.jpg", plot = p1, dpi = 300, width = 6, height = 4, units = "in")
-
-p2<-ggplot(long2[], aes(x = value)) +
-  geom_density(color="black", fill="darkgrey") +
-  facet_wrap(~ name, scales = "fixed") +
-   theme_minimal()+
-  labs(x = "Micron Value", y = "Frequency")+
-  scale_x_continuous(limits = x_range, expand = c(0, 0))+
-  theme(axis.title.x = element_text())
-p2
-ggsave("../visualizations/shape-center-spread/derm/all_animals-micron-length-spread2.jpg", plot = p2, dpi = 300, width = 6, height = 4, units = "in")
-
-p3<-ggplot(long3[], aes(x = value)) +
-  geom_density(color="black", fill="darkgrey") +
-  facet_wrap(~ name, scales = "fixed") +
-   theme_minimal()+
-  labs(x = "Micron Value", y = "Frequency")+
-  scale_x_continuous(limits = x_range, expand = c(0, 0))+
-  theme(axis.title.x = element_text())
-p3
-ggsave("../visualizations/shape-center-spread/derm/all_animals-micron-length-spread3.jpg", plot = p3, dpi = 300, width = 6, height = 4, units = "in")
-
-p4<-ggplot(long4[], aes(x = value)) +
-  geom_density(color="black", fill="darkgrey") +
-  facet_wrap(~ name, scales = "fixed") +
-   theme_minimal()+
-  labs(x = "Micron Value", y = "Frequency")+
-  scale_x_continuous(limits = x_range, expand = c(0, 0))+
-  theme(axis.title.x = element_text())
-p4
-ggsave("../visualizations/shape-center-spread/derm/all_animals-micron-length-spread4.jpg", plot = p4, dpi = 300, width = 6, height = 4, units = "in")
-
-p5<-ggplot(long5[], aes(x = value)) +
-  geom_density(color="black", fill="darkgrey") +
-  facet_wrap(~ name, scales = "fixed") +
-   theme_minimal()+
-  labs(x = "Micron Value", y = "Frequency")+
-  scale_x_continuous(limits = x_range, expand = c(0, 0))+
-  theme(axis.title.x = element_text())
-p5
-ggsave("../visualizations/shape-center-spread/derm/all_animals-micron-length-spread5.jpg", plot = p5, dpi = 300, width = 6, height = 4, units = "in")
-```
-
-### 2b. zoom in on select graphs
-Only one graph example is shown
-```{r, derm-zoom warning=FALSE}
-#scales 75;150;225;275
-
-# plot using ggplot
-# variables that chaneg are `long*[]` and `Animal_*`
-targetAnimal_only <- long4[] %>% filter(startsWith(name, "Animal_Y."))
-
-p1<-ggplot(targetAnimal_only, aes(x = value)) +
-  geom_density(fill = "blue", alpha = 0.5) +
-  theme_minimal()+
-  facet_wrap(~ name, scales = "fixed") +
-  labs(x = "Micron Value", y = "Frequency")+
-  scale_x_continuous(limits = c(0,275), expand = c(0, 0))+
-  theme(axis.title.x = element_text())
-  ggsave("../visualizations/shape-center-spread/derm/Animal_Y-micron-length-spread-zoomedView.jpg", plot=p1, dpi = 300, width = 6, height = 4, units = "in")
-
-p2<-ggplot(targetAnimal_only, aes(x = value)) +
-  geom_density(fill = "grey", color="transparent", alpha = 0.5) +
-  theme_minimal()+
-  facet_wrap(~ name, scales = "fixed") +
-  labs(x = "Micron Value", y = "Frequency")+
-  scale_x_continuous(limits = c(0,275), expand = c(0, 0))+
-  theme(axis.title.x = element_text())
-  ggsave("../visualizations/shape-center-spread/derm/Animal_Y-micron-length-spread-standardView.jpg", plot=p2, dpi = 300, width = 6, height = 4, units = "in")
-
-```
-
-
-## 3. FUNCTIONS for calculating metrics 
-
-
-### 3b. Write function to calculate sd of length for each column (aka each animal) 
-```{r, fnc-to-calc-sd}
-calculate_sd <- function(data) {
-  # Calculate column-wise sd using sapply function
-  std_deviations <- apply(data, 2, sd, na.rm = TRUE)
-  
-  # Create a new dataframe to store the column-wise averages
-  sd_df <- data.frame(column = names(data), sd = std_deviations)
-  
-  # Return the new dataframe
-  return(sd_df)
-}
-```
-
-### 3b. Write function to calculate range (max-min) of length for each column (aka each animal) 
-```{r, fnc-to-calc-range}
-calculate_range <- function(data) {
-  
- range_ <- function(vector){
-   na_rm_values <- vector[!is.na(vector)]
-    if (length(na_rm_values) <= 1) {
-      return(NA)
-    } else {
-      return(max(na_rm_values) - min(na_rm_values))
-    }
- }
- 
-  ranges <- apply(data, 2, range_)
-  
-  # Create a new dataframe to store the column-wise averages
-  range_df <- data.frame(column = names(data), range = ranges)
-  
-  # Return the new dataframe
-  return(range_df)
-}
-
-# first remove the NA values from each column using !is.na(x) and store non-NA values in na_rm_values 
-# If there are at least two non-NA values  calculate the maximum minus the minimum using max(na_rm_values) - min(na_rm_values) otherwise return NA for that column.
-```
-
-
-### 3c. Write function to calculate iqr of length for each column (aka each animal) 
-```{r, fnc-to-calc-iqr}
-calculate_iqr <- function(data) {
-  
- IQR_ <- function(vector){
-   na_rm_values <- vector[!is.na(vector)]
-   return(IQR(na_rm_values))
- }
- 
-  IQRs <- apply(data, 2, IQR_)
-  
-  # Create a new dataframe to store the column-wise averages
-  iqr_df <- data.frame(column = names(data), iqr = IQRs)
-  
-  # Return the new dataframe
-  return(iqr_df)
-}
-
-```
-
-### 3d. Write function to calculate mean length for each column (aka each animal)
-```{r, fnc-to-calcualte-averages}
-# Define a function to calculate column-wise averages
-calculate_averages <- function(data) {
-  # Calculate column-wise averages using colMeans() function
-  avg <- colMeans(data, na.rm = TRUE)
-  
-  # Create a new dataframe to store the column-wise averages
-  avg_df <- data.frame(column = names(data), average = avg)
-  
-  # Return the new dataframe
-  return(avg_df)
-}
-```
-
-### 3e. Write function to calculate median length for each column (aka each animal)
-```{r, fnc-to-calcualte-med}
-# Define a function to calculate column-wise averages
-calculate_median <- function(data) {
-  # Calculate column-wise averages using colMeans() function
-  med <- apply(data, 2, median, na.rm = TRUE)
-  
-  # Create a new dataframe to store the column-wise averages
-  med_df <- data.frame(column = names(data), median = med)
-  
-  # Return the new dataframe
-  return(med_df)
-}
-```
-
-### 3f. Write function to calculate mode length for each column (aka each animal)
-```{r, fnc-to-calcualte-mode}
-# round each number to ones place and find mode
-# take into account if any column has multiple modes and create a new row in the new dataframe for each of these modes
-
-
-calculate_mode <- function(data) {
-  # Function to find mode for a vector with multiple modes
-  find_modes <- function(vector) {
-    na_rm_values <- vector[!is.na(vector)]
-    na_rm_values <- round(na_rm_values)
-    unique_vals <- unique(na_rm_values)
-    counts <- tabulate(match(na_rm_values, unique_vals))
-    modes <- unique_vals[counts == max(counts)]
-    return(modes)
-  }
-
-  # Calculate column-wise modes function
-  mode_list <- lapply(data, find_modes)
-  
-  # Create a new dataframe to store the column-wise modes
-  mode_df <- data.frame(column = character(),
-                        mode = double())
-  
-  # Iterate over columns and append modes to the dataframe
-  for (i in seq_along(mode_list)) {
-    modes <- mode_list[[i]]
-    if (length(modes) > 1) {
-      mode_df <- rbind(mode_df, data.frame(column = rep(names(data)[i], length(modes)),
-                                           mode = modes))
-    } else if (length(modes) == 1) {
-      mode_df <- rbind(mode_df, data.frame(column = names(data)[i],
-                                           mode = modes))
-    }
-  }
-  
-  return(mode_df)
-}
-
-
-
-```
-
-```{r, test-mode-fnc}
-#for(n in c(1:30)){
-test_data<-all_epidermis_lengths_in_microns[,-19]
-n=19
-
-vector=all_epidermis_lengths_in_microns[,n]
-na_rm_values <- vector[!is.na(vector)]
-    
-    na_rm_values <- round(na_rm_values)
-    
-     unique_vals <- unique(na_rm_values)
-     
-     counts <- tabulate(match(na_rm_values, unique_vals))
-     m1<-unique_vals[counts == max(counts)]
-
-vector=all_epidermis_lengths_in_microns[,n]
-na_rm_values <- vector[!is.na(vector)]
-    
-    na_rm_values <- round(na_rm_values)
-    
-     unique_vals <- unique(na_rm_values)
-     
-     counts <- tabulate(match(na_rm_values, unique_vals))
-     m1<-unique_vals[counts == max(counts)]
-    
-
-vector=all_dermis_lengths_in_microns[,n]
-na_rm_values <- vector[!is.na(vector)]
-    
-    na_rm_values <- round(na_rm_values)
-    
-     unique_vals <- unique(na_rm_values)
-     
-     counts <- tabulate(match(na_rm_values, unique_vals))
-     m2<-unique_vals[counts == max(counts)]
-     
-     p<-c(n, m1,m2)
-     print(p)
-#}
-     
-     m1
-     m2
-```
-
-### 3g. Write a master function that takes a function as an argument and unblinds the data frame and saves a dataframe where each column is the treatment received by the animal (nonop, op, map, etc.)
-
-
-make dataframes (excel) that can be copied and pasted into prism and put them all on one excel doc just different sheets
-
-aka one sheet for mean, median, mode, sd, range, etc.
-
+## 4. Write function to turn integral df's into excel spreadsheet
+one excel document with two sheets
+sheet1: epidermis treatments
+sheet 2: dermis treatments
 ```{r, master-fnc-prism}
 # load library for making excel spreadhseet
 library(openxlsx)
@@ -714,71 +222,27 @@ create_dataframe <- function(vec1, vec2, vec3) {
   return(df)
 }
 
-master <- function(data, type="dermis"){
-  # store all metric dataframes and add treatment labels
-  sd_data <- add_identity_unblind_column(calculate_sd(data))
-  range_data <- add_identity_unblind_column(calculate_range(data))
-  iqr_data <- add_identity_unblind_column(calculate_iqr(data))
-  
-  mode_data <- add_identity_unblind_column(calculate_mode(data))
-  med_data <- add_identity_unblind_column(calculate_median(data))
-  avg_data <- add_identity_unblind_column(calculate_averages(data))
- 
-  # then mutate so any map treatment is grouped
-  
-    sd_data <- mutate_map(sd_data)
-    
-    range_data <- mutate_map(range_data)
-    iqr_data <- mutate_map(iqr_data)
-    
-    mode_data <- mutate_map(mode_data)
-    
-    med_data <- mutate_map(med_data)
-    avg_data <- mutate_map(avg_data)
+master <- function(epidermis_data, dermis_data){
+   # then mutate so any map treatment is grouped
+    data1_with_treatment_groups <- mutate_map(epidermis_data)
+    data2_with_treatment_groups <- mutate_map(dermis_data)
   
   
   # and then make dataframe with a column each of the treatment groups (MAP, NoMAP, Unmanip)
-    sd_data_sorted<-create_dataframe(
-      (filter_data_by_phrase(sd_data, p1))$sd,
-      (filter_data_by_phrase(sd_data, p2))$sd,
-      (filter_data_by_phrase(sd_data, p3))$sd
+    data1_sorted<-create_dataframe(
+      (filter_data_by_phrase(data1_with_treatment_groups, p1))$auc,
+      (filter_data_by_phrase(data1_with_treatment_groups, p2))$auc,
+      (filter_data_by_phrase(data1_with_treatment_groups, p3))$auc
       )
-    range_data_sorted<-create_dataframe(
-      (filter_data_by_phrase(range_data, p1))$range,
-      (filter_data_by_phrase(range_data, p2))$range,
-      (filter_data_by_phrase(range_data, p3))$range
-      )
-    iqr_data_sorted<-create_dataframe(
-      (filter_data_by_phrase(iqr_data, p1))$iqr,
-      (filter_data_by_phrase(iqr_data, p2))$iqr,
-      (filter_data_by_phrase(iqr_data, p3))$iqr
-      )
-    
-    mode_data_sorted<-create_dataframe(
-      (filter_data_by_phrase(mode_data, p1))$mode,
-      (filter_data_by_phrase(mode_data, p2))$mode,
-      (filter_data_by_phrase(mode_data, p3))$mode
-      )
-    
-    med_data_sorted<-create_dataframe(
-      (filter_data_by_phrase(med_data, p1))$median,
-      (filter_data_by_phrase(med_data, p2))$median,
-      (filter_data_by_phrase(med_data, p3))$median
-      )
-    mean_data_sorted<-create_dataframe(
-      (filter_data_by_phrase(avg_data, p1))$average,
-      (filter_data_by_phrase(avg_data, p2))$average,
-      (filter_data_by_phrase(avg_data, p3))$average
+    data2_sorted<-create_dataframe(
+      (filter_data_by_phrase(data2_with_treatment_groups, p1))$auc,
+      (filter_data_by_phrase(data2_with_treatment_groups, p2))$auc,
+      (filter_data_by_phrase(data2_with_treatment_groups, p3))$auc
       )
     
     #... and change column names
-    colnames(sd_data_sorted) <- c("Unmanipulated", "NoMAP", "MAP")
-    colnames(range_data_sorted) <- c("Unmanipulated", "NoMAP", "MAP")
-    colnames(iqr_data_sorted) <- c("Unmanipulated", "NoMAP", "MAP")
-    
-    colnames(mode_data_sorted) <- c("Unmanipulated", "NoMAP", "MAP")
-    colnames(med_data_sorted) <- c("Unmanipulated", "NoMAP", "MAP")
-    colnames(mean_data_sorted) <- c("Unmanipulated", "NoMAP", "MAP")
+    colnames(data1_sorted) <- c("Unmanipulated", "NoMAP", "MAP")
+    colnames(data2_sorted) <- c("Unmanipulated", "NoMAP", "MAP")
   
     
     # then make excel spreadsheet where each df occupies one sheet
@@ -786,24 +250,30 @@ master <- function(data, type="dermis"){
     wb <- createWorkbook()
     
     # then add data frames to separate sheets
-  addWorksheet(wb, sheetName = "sd")
-  addWorksheet(wb, sheetName = "range")
-  addWorksheet(wb, sheetName = "iqr")
-  addWorksheet(wb, sheetName = "mode")
-  addWorksheet(wb, sheetName = "median")
-  addWorksheet(wb, sheetName = "mean")
+  addWorksheet(wb, sheetName = "epidermis")
+  addWorksheet(wb, sheetName = "dermis")
   
-  writeData(wb,"sd",sd_data_sorted)
-  writeData(wb,"range",range_data_sorted)
-  writeData(wb,"iqr",iqr_data_sorted)
-  writeData(wb,"mode",mode_data_sorted)
-  writeData(wb,"median",med_data_sorted)
-  writeData(wb,"mean",mean_data_sorted)
+  writeData(wb,"epidermis",data1_sorted)
+  writeData(wb,"dermis",data2_sorted)
   
   # finally save the workbook to a file
-saveWorkbook(wb, paste0("../data/230523-prism-", type, "-output.xlsx"))
+saveWorkbook(wb, paste0("../data/230523-prism-integrals-output.xlsx"))
 }
 ```
+
+
+### 4a. Use function to turn integral df's into excel spreadsheet
+```{r, use-master-fnc}
+master(labelled_epidermis_auc, labelled_dermis_auc)
+```
+
+
+
+make dataframes (excel) that can be copied and pasted into prism and put them all on one excel doc just different sheets
+
+aka one sheet for mean, median, mode, sd, range, etc.
+
+
 
 ## 4. Use previous function to create dataframes for all metrics
 ```{r, use-master-fnc}
