@@ -96,10 +96,115 @@ actual_densityplot
 (integrate(this_densityEquation, min(test_data), max(test_data))$value) == calculate_auc(all_epidermis_lengths_in_microns)[1]
 ```
 
-## 2a. Calculate the area under the curve of ach animal's density plots for epidermis and dermis
+## 2. Calculate the area under the curve of ach animal's density plots for epidermis and dermis
 ```{r, calc-integral}
 epidermis_auc <- calculate_auc(all_epidermis_lengths_in_microns)
 dermis_auc <- calculate_auc(all_dermis_lengths_in_microns)
+```
+
+## 3. Label integrals with animal and treatment
+### 3a. Write funciton to unblind animal identities
+```{r, unblind-fnc}
+add_identity_unblind_column <- function(df) {
+  # Define a lookup table of filename prefixes and corresponding identity_unblind values
+  prefixes <- c("Animal_A.t" = "Exp17_Racemic-MAP_POD7_Mouse14",
+                "Animal_C.t" = "Exp16_D-MAP_POD4_Mouse3",
+                "Animal_D.t" = "Exp15_L-MAP_Mouse3_POD4",
+                "Animal_F.t" = "Exp17_Racemic-MAP_POD7_Mouse11",
+                "Animal_H.t" = "Exp17_Racemic-MAP_POD4_Mouse2",
+                "Animal_I.t" = "Exp15_L-MAP_POD7_Mouse13",
+                "Animal_J.t" = "Exp15_L-MAP_POD4_Mouse2",
+                 "Animal_O.t" = "Exp17_Racemic-MAP_POD7_Mouse13",
+                "Animal_W.t" = "Exp17_Racemic-MAP_POD7_Mouse12",
+                "Animal_Y.t" = "Exp16_D-MAP_POD7_Mouse11",
+                "Animal_Z1." = "Exp17_Racemic-MAP_POD4_Mouse1",
+                "Animal_B.t" = "Exp15_POD7_Mouse11_L-MAP",
+                "Animal_P.t" = "Exp14_POD7_Mouse13_D-MAP",
+                "Animal_R.t" = "Exp16_POD7_Mouse2_D-MAP",
+                "Animal_Z6." = "Exp16_POD7_Mouse11_D-MAP",
+                "Animal_Z8." = "Exp16_POD4_Mouse2_D-MAP",
+                 #"Animal_Z3." = "Exp15_Mouse12_POD7_LMAP",
+                "Animal_Z9." = "Exp17_POD4_Mouse3_Racemic-MAP",
+                "Animal_Z10" = "Exp16_POD4_Mouse1_D-MAP",
+               
+                "Animal_E.t" = "Exp14_No-MAP_POD7_Mouse11",
+                "Animal_K.t" = "Exp14_No-MAP_POD4_Mouse4",
+                "Animal_L.t" = "Exp14_No-MAP_POD7_Mouse12",
+                "Animal_M.t" = "Exp14_No-MAP_POD4_Mouse3",
+                "Animal_U.t" = "Exp14_No-MAP_POD4_Mouse1",
+                "Animal_Z2." = "Exp14_POD7_Mouse14_No-MAP",
+                "Animal_X.t" = "Exp14_No-MAP_POD4_Mouse2",
+                
+                "Animal_G.t" = "Unmanipulated_PepB",
+                "Animal_N.t" = "Unmanip_PepB",
+                "Animal_V.t" = "Unmanip_B6",
+                "Animal_Z4." = "Exp15_POD4_Mouse1",
+                "Animal_Z.t" = "UnmanipB6")
+                
+                
+  
+  # look up the identity_unblind value for each filename in the dataframe
+  found<-vector(length=dim(df)[1])
+  
+  for(i in c(1:length(found))){
+    this_fileName <- df[i,2]
+    
+    prefix <- substr(this_fileName, 1, 10) # Extract the first 10 characters of the filename
+    this_label<-prefixes[prefix] # Look up the corresponding identity_unblind value
+    found[i] <- this_label # and add label to vector
+  }
+  return(found)
+}
+
+```
+
+### 3b. make integral dataframe with animal names and treatment groups 
+```{r, label-integrals}
+# make integral dataframes
+labelled_epidermis_auc <- data.frame(epidermis_auc, colnames(all_epidermis_lengths_in_microns))
+labelled_dermis_auc <- data.frame(dermis_auc, colnames(all_dermis_lengths_in_microns))
+
+# label columns
+colnames(labelled_dermis_auc) <- c("auc", "animal")
+colnames(labelled_epidermis_auc) <- c("auc", "animal")
+
+# label with treatments
+treatments <- data.frame("Animal_A.t" = "Exp17_Racemic-MAP_POD7_Mouse14",
+                "Animal_C.t" = "Exp16_D-MAP_POD4_Mouse3",
+                "Animal_D.t" = "Exp15_L-MAP_Mouse3_POD4",
+                "Animal_F.t" = "Exp17_Racemic-MAP_POD7_Mouse11",
+                "Animal_H.t" = "Exp17_Racemic-MAP_POD4_Mouse2",
+                "Animal_I.t" = "Exp15_L-MAP_POD7_Mouse13",
+                "Animal_J.t" = "Exp15_L-MAP_POD4_Mouse2",
+                 "Animal_O.t" = "Exp17_Racemic-MAP_POD7_Mouse13",
+                "Animal_W.t" = "Exp17_Racemic-MAP_POD7_Mouse12",
+                "Animal_Y.t" = "Exp16_D-MAP_POD7_Mouse11",
+                "Animal_Z1." = "Exp17_Racemic-MAP_POD4_Mouse1",
+                "Animal_B.t" = "Exp15_POD7_Mouse11_L-MAP",
+                "Animal_P.t" = "Exp14_POD7_Mouse13_D-MAP",
+                "Animal_R.t" = "Exp16_POD7_Mouse2_D-MAP",
+                "Animal_Z6." = "Exp16_POD7_Mouse11_D-MAP",
+                "Animal_Z8." = "Exp16_POD4_Mouse2_D-MAP",
+                 #"Animal_Z3." = "Exp15_Mouse12_POD7_LMAP",
+                "Animal_Z9." = "Exp17_POD4_Mouse3_Racemic-MAP",
+                "Animal_Z10" = "Exp16_POD4_Mouse1_D-MAP",
+               
+                "Animal_E.t" = "Exp14_No-MAP_POD7_Mouse11",
+                "Animal_K.t" = "Exp14_No-MAP_POD4_Mouse4",
+                "Animal_L.t" = "Exp14_No-MAP_POD7_Mouse12",
+                "Animal_M.t" = "Exp14_No-MAP_POD4_Mouse3",
+                "Animal_U.t" = "Exp14_No-MAP_POD4_Mouse1",
+                "Animal_Z2." = "Exp14_POD7_Mouse14_No-MAP",
+                "Animal_X.t" = "Exp14_No-MAP_POD4_Mouse2",
+                
+                "Animal_G.t" = "Unmanipulated_PepB",
+                "Animal_N.t" = "Unmanip_PepB",
+                "Animal_V.t" = "Unmanip_B6",
+                "Animal_Z4." = "Exp15_POD4_Mouse1",
+                "Animal_Z.t" = "UnmanipB6")
+treatments<-tidyr::pivot_longer(treatments, everything())
+
+labelled_dermis_auc <- inner_join(labelled_dermis_auc, treatments, by = c('animal','name')) 
 ```
 
 ## 1. create density plots for each animal's EPIDERMIS lengths...
@@ -412,56 +517,6 @@ p2<-ggplot(targetAnimal_only, aes(x = value)) +
 
 ## 3. FUNCTIONS for calculating metrics 
 
-### 3a. Write funciton to unblind animal identities
-```{r, unblind-fnc}
-add_identity_unblind_column <- function(df) {
-  # Define a lookup table of filename prefixes and corresponding identity_unblind values
-  prefixes <- c("Animal_A.t" = "Exp17_Racemic-MAP_POD7_Mouse14",
-                "Animal_C.t" = "Exp16_D-MAP_POD4_Mouse3",
-                "Animal_D.t" = "Exp15_L-MAP_Mouse3_POD4",
-                "Animal_F.t" = "Exp17_Racemic-MAP_POD7_Mouse11",
-                "Animal_H.t" = "Exp17_Racemic-MAP_POD4_Mouse2",
-                "Animal_I.t" = "Exp15_L-MAP_POD7_Mouse13",
-                "Animal_J.t" = "Exp15_L-MAP_POD4_Mouse2",
-                 "Animal_O.t" = "Exp17_Racemic-MAP_POD7_Mouse13",
-                "Animal_W.t" = "Exp17_Racemic-MAP_POD7_Mouse12",
-                "Animal_Y.t" = "Exp16_D-MAP_POD7_Mouse11",
-                "Animal_Z1." = "Exp17_Racemic-MAP_POD4_Mouse1",
-                "Animal_B.t" = "Exp15_POD7_Mouse11_L-MAP",
-                "Animal_P.t" = "Exp14_POD7_Mouse13_D-MAP",
-                "Animal_R.t" = "Exp16_POD7_Mouse2_D-MAP",
-                "Animal_Z6." = "Exp16_POD7_Mouse11_D-MAP",
-                "Animal_Z8." = "Exp16_POD4_Mouse2_D-MAP",
-                 #"Animal_Z3." = "Exp15_Mouse12_POD7_LMAP",
-                "Animal_Z9." = "Exp17_POD4_Mouse3_Racemic-MAP",
-                "Animal_Z10" = "Exp16_POD4_Mouse1_D-MAP",
-               
-                "Animal_E.t" = "Exp14_No-MAP_POD7_Mouse11",
-                "Animal_K.t" = "Exp14_No-MAP_POD4_Mouse4",
-                "Animal_L.t" = "Exp14_No-MAP_POD7_Mouse12",
-                "Animal_M.t" = "Exp14_No-MAP_POD4_Mouse3",
-                "Animal_U.t" = "Exp14_No-MAP_POD4_Mouse1",
-                "Animal_Z2." = "Exp14_POD7_Mouse14_No-MAP",
-                "Animal_X.t" = "Exp14_No-MAP_POD4_Mouse2",
-                
-                "Animal_G.t" = "Unmanipulated_PepB",
-                "Animal_N.t" = "Unmanip_PepB",
-                "Animal_V.t" = "Unmanip_B6",
-                "Animal_Z4." = "Exp15_POD4_Mouse1",
-                "Animal_Z.t" = "UnmanipB6")
-                
-                
-  
-  # Use sapply to look up the identity_unblind value for each filename in the dataframe
-  df$identity_unblind <- sapply(df$column, function(x) {
-    prefix <- substr(x, 1, 10) # Extract the first 8 characters of the filename
-    prefixes[prefix] # Look up the corresponding identity_unblind value
-  })
-  
-  return(df)
-}
-
-```
 
 ### 3b. Write function to calculate sd of length for each column (aka each animal) 
 ```{r, fnc-to-calc-sd}
