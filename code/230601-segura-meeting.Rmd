@@ -3,7 +3,6 @@ title: "050423-segura-meeting.Rmd"
 output: html_document
 date: "2023-04-05"
 ---
-fix 2 section
 
 ## 0a. load libraries
 ```{r, load}
@@ -39,8 +38,71 @@ all_dermis_lengths_in_microns <- all_dermis_micron
 all_epidermis_lengths_in_microns <- all_epidermis_micron
 ```
 
+## 1. write function to calculate integral of density plots
+```{r, fnc-integral}
+calculate_auc <- function(data) {
+  library(stats)
+  
+  num_columns <- ncol(data)
+   #initializes an empty vector to store the area under the curve values for each column.
+  auc_results <- vector("numeric", length = num_columns)
+  
+  for (i in 1:num_columns){
+  # iterate over each column and generate a density plot for each 
 
-## 1. visualize spread of each animal's EPIDERMIS lengths...
+    this_column <- data[,i]
+    
+    # remove missing values so R density() fnc can calculate densities
+    this_column <- this_column[!is.na(this_column)]
+    this_density <- density(this_column)
+    
+    # calculate area under curve with definite integral
+    # 1. define a function using interpolation that describes the density curve for the integrate() R function to use
+      this_densityEquation <- approxfun(this_density$x,this_density$y)
+    # 2. then call integrate() function
+    auc <- integrate(this_densityEquation, min(this_column), max(this_column),subdivisions = 2000)$value
+    # and save to vector
+    auc_results[i] <- auc
+    
+  }
+  return(auc_results)
+}
+```
+
+## 2. test density function approxfun() to make sure it makes a density plot similar to actual
+```{r, test-approxfun}
+test_data<-(all_epidermis_lengths_in_microns[,1])[!is.na(all_epidermis_lengths_in_microns[,1])]
+x<-density(test_data)$x
+y<-density(test_data)$y
+this_densityEquation <- approxfun(x,y)
+
+
+# actual plot
+df_set1<-all_epidermis_lengths_in_microns[,1:6]
+long1 <- tidyr::pivot_longer(df_set1, everything())
+targetAnimal_only <- long1[] %>% filter(startsWith(name, "Animal_A."))
+
+actual_densityplot<-ggplot(targetAnimal_only, aes(x = value)) +
+  geom_density(fill = "grey", color="transparent", alpha = 0.5) +
+  theme_minimal()+
+  labs(x = "Micron Value", y = "Frequency")+
+  scale_x_continuous(limits = c(0,80), expand = c(0, 0))+
+  theme(axis.title.x = element_text())
+
+curve(this_densityEquation, from = 0, to = 80, n = 1000, xlab = "x", ylab = "y", main = "Outline of the Function")
+actual_densityplot
+
+# check that my function calculated integral correctly
+(integrate(this_densityEquation, min(test_data), max(test_data))$value) == calculate_auc(all_epidermis_lengths_in_microns)[1]
+```
+
+## 2a. Calculate the area under the curve of ach animal's density plots for epidermis and dermis
+```{r, calc-integral}
+epidermis_auc <- calculate_auc(all_epidermis_lengths_in_microns)
+dermis_auc <- calculate_auc(all_dermis_lengths_in_microns)
+```
+
+## 1. create density plots for each animal's EPIDERMIS lengths...
 - use same binwidth and same axes
 ```{r, spread-epi-micron-data}
 df_set1<-all_epidermis_lengths_in_microns[,1:6]
@@ -57,10 +119,8 @@ long4 <- tidyr::pivot_longer(df_set4, everything())
 long5 <- tidyr::pivot_longer(df_set5, everything())
 ```
 
-### 1a. on scale of 0-125 microns
+### 1a. create plots
 ```{r, spread-epi-micron-histgraph}
-# set y-axis range
-x_range <- c(0,125)
 
 # plot using ggplot and facet_wrap()
 p1<-ggplot(long1[], aes(x = value)) +
