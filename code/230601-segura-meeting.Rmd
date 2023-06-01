@@ -69,7 +69,7 @@ calculate_auc <- function(data) {
 }
 ```
 
-## 2. test density function approxfun() to make sure it makes a density plot similar to actual
+## 2a. test density function approxfun() to make sure it makes a density plot similar to actual
 ```{r, test-approxfun}
 test_data<-(all_epidermis_lengths_in_microns[,1])[!is.na(all_epidermis_lengths_in_microns[,1])]
 x<-density(test_data)$x
@@ -95,15 +95,62 @@ actual_densityplot
 # check that my function calculated integral correctly
 (integrate(this_densityEquation, min(test_data), max(test_data))$value) == calculate_auc(all_epidermis_lengths_in_microns)[1]
 ```
+## 2b. Continued testing of function
+```{r, testing-cont}
+#standard numeric
+data <- data.frame(
+  col1 = c(1, 2, 3, 4, 5),
+  col2 = c(6, 7, 8, 9, 10),
+  col3 = c(11, 12, 13, 14, 15)
+)
 
-## 2. Calculate the area under the curve of ach animal's density plots for epidermis and dermis
+result <- calculate_auc(data)
+print(result)
+# expected 1.683505 1.683505 1.683505
+
+# negative values
+data <- data.frame(
+  col1 = c(-1, -2, -3, -4, -5),
+  col2 = c(-6, -7, -8, -9, -10),
+  col3 = c(-11, -12, -13, -14, -15)
+)
+
+result <- calculate_auc(data)
+print(result)
+# expected 1.683505 1.683505 1.683505
+
+# missing values
+data <- data.frame(
+  col1 = c(1, 2, NA, 4, 5),
+  col2 = c(6, NA, 8, 9, 10),
+  col3 = c(11, 12, 13, NA, 15)
+)
+
+result <- calculate_auc(data)
+print(result)
+# expected [1] 1.683505 1.683505 1.683505
+
+# different density curves
+set.seed(123)
+data <- data.frame(
+  col1 = rnorm(100),
+  col2 = rnorm(100, mean = 2),
+  col3 = rnorm(100, mean = -2)
+)
+
+result <- calculate_auc(data)
+print(result)
+# expected  0.3318891 0.3077189 0.3318891
+```
+
+## 3. Calculate the area under the curve of ach animal's density plots for epidermis and dermis
 ```{r, calc-integral}
 epidermis_auc <- calculate_auc(all_epidermis_lengths_in_microns)
 dermis_auc <- calculate_auc(all_dermis_lengths_in_microns)
 ```
 
-## 3. Label integrals with animal and treatment
-### 3a. Write funciton to unblind animal identities found in auc df's
+## 4. Label integrals with animal and treatment
+### 4a. Write funciton to unblind animal identities found in auc df's
 ```{r, unblind-fnc}
 add_identity_unblind_column <- function(df) {
   # Define a lookup table of filename prefixes and corresponding identity_unblind values
@@ -158,7 +205,7 @@ add_identity_unblind_column <- function(df) {
 
 ```
 
-### 3b. make integral dataframe with animal names and treatment groups 
+### 4b. make integral dataframe with animal names and treatment groups 
 ```{r, label-integrals}
 # make integral dataframes
 labelled_epidermis_auc <- data.frame(epidermis_auc, colnames(all_epidermis_lengths_in_microns))
@@ -262,78 +309,11 @@ saveWorkbook(wb, paste0("../data/230523-prism-integrals-output.xlsx"))
 ```
 
 
-### 4a. Use function to turn integral df's into excel spreadsheet
+### 5a. Use function to turn integral df's into excel spreadsheet
 ```{r, use-master-fnc}
 master(labelled_epidermis_auc, labelled_dermis_auc)
 ```
 
 
 
-make dataframes (excel) that can be copied and pasted into prism and put them all on one excel doc just different sheets
 
-aka one sheet for mean, median, mode, sd, range, etc.
-
-
-
-## 4. Use previous function to create dataframes for all metrics
-```{r, use-master-fnc}
-master(all_dermis_lengths_in_microns, type="dermis")
-master(all_epidermis_lengths_in_microns, type="epidermis")
-```
-
-## 5. Compare shapes of map, nomap, unmanip for ALL animals using multiple density curve plot
-use averages from each animal
-```{r, all-animals-shape-function}
-create_density_plot <- function(df1, df2) {
-  # Extract the second column values from each data frame
-  values1 <- df1[[2]]
-  values2 <- df2[[2]]
-  
-  # Combine the values into a single data frame for plotting
-  combined_data <- data.frame(Values = c(values1, values2),
-                              Group = c(rep("Data Frame 1", length(values1)),
-                                        rep("Data Frame 2", length(values2))))
-  
-  # Create the density plot using ggplot2
-  density_plot <- ggplot(combined_data, aes(x = Values, fill = Group)) +
-    geom_density(alpha = 0.5) +
-    scale_fill_manual(values = c("blue", "red")) +
-    labs(x = "Values", y = "Density", title = "Density Plot") +
-    theme_minimal()
-  
-  # Display the plot
-  print(density_plot)
-}
-```
-
-```{r, all-animals-shape-plot}
-create_density_plot(calculate_averages(all_dermis_lengths_in_microns), calculate_averages(all_epidermis_lengths_in_microns))
-```
-
-use all un-averaged data
-```{r, all-animals-shape-function}
-create_density_plot <- function(df1, df2) {
-  # Extract the second column values from each data frame
-  values1 <- df1[[2]]
-  values2 <- df2[[2]]
-  
-  # Combine the values into a single data frame for plotting
-  combined_data <- data.frame(Values = c(values1, values2),
-                              Group = c(rep("Data Frame 1", length(values1)),
-                                        rep("Data Frame 2", length(values2))))
-  
-  # Create the density plot using ggplot2
-  density_plot <- ggplot(combined_data, aes(x = Values, fill = Group)) +
-    geom_density(alpha = 0.5) +
-    scale_fill_manual(values = c("blue", "red")) +
-    labs(x = "Values", y = "Density", title = "Density Plot") +
-    theme_minimal()
-  
-  # Display the plot
-  print(density_plot)
-}
-```
-
-```{r, all-animals-shape-plot}
-create_density_plot(calculate_averages(all_dermis_lengths_in_microns), calculate_averages(all_epidermis_lengths_in_microns))
-```
