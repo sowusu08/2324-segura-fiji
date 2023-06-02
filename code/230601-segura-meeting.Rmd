@@ -40,6 +40,15 @@ all_epidermis_lengths_in_microns <- all_epidermis_micron
 
 ## 1. write function to calculate integral of density plots
 ```{r, fnc-integral}
+# this function takes a data frame 'data' where each column corresponds to a specific histology section and each row contains epidermis or dermis lengths in microns for a particular histology section. For example:
+
+# Animal_A | Animal_B | Animal_C | . . .
+# ---------|----------|----------| -----
+#   53.9   |   2.20   |   22.0   | 
+#   53.68  |   2.24   |  21.78.  | . . .
+#   . . .  |  . . .   |  . . .   |
+
+
 calculate_auc <- function(data) {
   library(stats)
   
@@ -60,7 +69,7 @@ calculate_auc <- function(data) {
     # 1. define a function using interpolation that describes the density curve for the integrate() R function to use
       this_densityEquation <- approxfun(this_density$x,this_density$y)
     # 2. then call integrate() function
-    auc <- integrate(this_densityEquation, min(this_column), max(this_column),subdivisions = 2000)$value
+    auc <- integrate(this_densityEquation, lower=min(this_column), upper=max(this_column),subdivisions = 2000)$value
     # and save to vector
     auc_results[i] <- auc
     
@@ -69,6 +78,54 @@ calculate_auc <- function(data) {
 }
 ```
 
+## 1b. take 2 at integral function
+```{r,diff-fnc}
+library(pracma)
+
+calculate_auc <- function(data) {
+  library(stats)
+  
+  num_columns <- ncol(data)
+   #initializes an empty vector to store the area under the curve values for each column.
+  auc_results <- vector("numeric", length = num_columns)
+  
+  for (i in 1:num_columns){
+  # iterate over each column and generate a density plot for each 
+
+    this_column <- data[,i]
+    
+    # remove missing values so R density() fnc can calculate densities
+    this_column <- this_column[!is.na(this_column)]
+    this_density <- density(this_column)
+    
+    # calculate area under curve with definite integral
+    # 1. define a function using interpolation that describes the density curve for the integrate() R function to use
+      this_densityEquation <- approxfun(this_density$x,this_density$y)
+      
+      # Define the Simpson's rule integration function
+simpsons_integration <- function(f, lower, upper, n = 1000) {
+  x <- seq(lower, upper, length.out = n + 1)
+  h <- (upper - lower) / n
+  y <- f(x)
+  
+  even_sum <- sum(y[seq(2, n, 2)])
+  odd_sum <- sum(y[seq(3, n-1, 2)])
+  
+  integral <- (h/3) * (y[1] + y[n+1] + 4 * odd_sum + 2 * even_sum)
+  return(integral)
+}
+
+# Calculate the integral of the function using Simpson's rule
+integral_result <- simpsons_integration(this_densityEquation, lower = 0, upper = 1)
+      
+      #auc <- integrate.quad(this_densityEquation, min(this_column), max(this_column))$value
+      
+    auc_results[i] <- integral_result
+    
+  }
+  return(auc_results)
+}
+```
 ## 2a. test density function approxfun() to make sure it makes a density plot similar to actual
 ```{r, test-approxfun}
 test_data<-(all_epidermis_lengths_in_microns[,1])[!is.na(all_epidermis_lengths_in_microns[,1])]
@@ -309,11 +366,12 @@ saveWorkbook(wb, paste0("../data/230523-prism-integrals-output.xlsx"))
 ```
 
 
-### 5a. Use function to turn integral df's into excel spreadsheet
+## 5a. Use function to turn integral df's into excel spreadsheet
 ```{r, use-master-fnc}
 master(labelled_epidermis_auc, labelled_dermis_auc)
 ```
 
 
-
+## 6. Write a function to use scipy to count the number of peaks in density plots
+### 6a. setup python environment
 
