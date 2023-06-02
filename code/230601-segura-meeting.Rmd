@@ -372,6 +372,9 @@ master(labelled_epidermis_auc, labelled_dermis_auc)
 ```
 
 
-## 6. Write a function to use scipy to count the number of peaks in density plots
-### 6a. setup python environment
+## 6. save epidermis and dermis micron length csv files for python access
+```{r, make-micron-csv}
+write.csv(all_epidermis_lengths_in_microns, file="../data/all_epidermis_lengths_in_microns.csv")
+write.csv(all_dermis_lengths_in_microns, file="../data/all_dermis_lengths_in_microns.csv")
+```
 
