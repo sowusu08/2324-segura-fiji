@@ -38,6 +38,55 @@ all_dermis_lengths_in_microns <- all_dermis_micron
 all_epidermis_lengths_in_microns <- all_epidermis_micron
 ```
 
+## Od. Generate density dataframes for each animal
+```{r, interpolation}
+# use interpolate to make dataframe with points that make outline of density plots
+generate_density_data <- function(data) {
+  num_columns <- ncol(data)
+  
+  # generate list for x and y values of 
+  density_coordinates_list <- list()
+  
+  # make the list contain one dataframe for all the x values and one dataframe for all the y values
+  density_coordinates_list$x <- vector()
+  density_coordinates_list$y <- vector()
+  
+  # iterate over each column and generate a density plot for each 
+  for (i in 1:num_columns){
+    this_column <- data[,i]
+    #this_column <- data[,1]
+    
+    # remove missing values so R density() fnc can calculate densities
+    this_column <- this_column[!is.na(this_column)]
+    this_density <- density(this_column)
+    
+    # then add x values to dataframe in first list element, in the ith column
+    density_coordinates_list$x <- cbind(density_coordinates_list$x, this_density$x)
+    
+    # then add y values to dataframe in second list element
+    density_coordinates_list$y <- cbind(density_coordinates_list$y, this_density$y)
+  } 
+  
+  # then name columns of dataframes stored in list
+  density_coordinates_list$x <- data.frame(density_coordinates_list$x)
+  density_coordinates_list$y <- data.frame(density_coordinates_list$y)
+  
+  colnames(density_coordinates_list$x) <- colnames(data)
+  colnames(density_coordinates_list$y) <- colnames(data)
+  
+  # and return list
+  return(density_coordinates_list)
+}
+
+# test_density <- generate_density_data(all_dermis_lengths_in_microns)
+# (test_density$x)
+# (test_density$y)
+
+# test_dermis_density <- generate_density_data(all_dermis_lengths_in_microns)
+# View(test_dermis_density$x)
+# View(test_dermis_density$y)
+```
+
 ## 1. write function to calculate integral of density plots
 ```{r, fnc-integral}
 # this function takes a data frame 'data' where each column corresponds to a specific histology section and each row contains epidermis or dermis lengths in microns for a particular histology section. For example:
