@@ -1,0 +1,380 @@
+---
+title: "050423-segura-meeting.Rmd"
+output: html_document
+date: "2023-04-05"
+---
+
+## 0a. load libraries
+```{r, load}
+library(tidyverse)
+library(dplyr)
+
+conversion = 100/22  #write multiplication conversion factor here; currently holds test value
+```
+
+
+## 0b. Read in the epidermis and dermis pixel dataframes 
+skip first column (it is just the number of rows)
+```{r, open-dermis-and-epidermis-dfs}
+all_epidermis <- read_csv(paste0("../data/","all_epidermis_lengths_in_pixels.csv"))
+a<-length(colnames(all_epidermis))
+
+all_dermis <- read_csv(paste0("../data/","all_dermis_lengths_in_pixels.csv"))
+b<-length(colnames(all_dermis))
+
+# skip first column (it is just the number of rows)
+all_epidermis <- all_epidermis[,2:a]
+all_dermis <- all_dermis[,2:b]
+
+# apply conversion
+all_epidermis_micron <- all_epidermis/conversion
+all_dermis_micron <- all_dermis/conversion
+```
+
+## 0c. Rename epidermis and dermis df for readability
+```{r, load-pixel-epiderm-derm}
+
+all_dermis_lengths_in_microns <- all_dermis_micron
+all_epidermis_lengths_in_microns <- all_epidermis_micron
+```
+
+## 1. write function to calculate integral of density plots
+```{r, fnc-integral}
+# this function takes a data frame 'data' where each column corresponds to a specific histology section and each row contains epidermis or dermis lengths in microns for a particular histology section. For example:
+
+# Animal_A | Animal_B | Animal_C | . . .
+# ---------|----------|----------| -----
+#   53.9   |   2.20   |   22.0   | 
+#   53.68  |   2.24   |  21.78.  | . . .
+#   . . .  |  . . .   |  . . .   |
+
+
+calculate_auc <- function(data) {
+  library(stats)
+  
+  num_columns <- ncol(data)
+   #initializes an empty vector to store the area under the curve values for each column.
+  auc_results <- vector("numeric", length = num_columns)
+  
+  for (i in 1:num_columns){
+  # iterate over each column and generate a density plot for each 
+
+    this_column <- data[,i]
+    
+    # remove missing values so R density() fnc can calculate densities
+    this_column <- this_column[!is.na(this_column)]
+    this_density <- density(this_column)
+    
+    # calculate area under curve with definite integral
+    # 1. define a function using interpolation that describes the density curve for the integrate() R function to use
+      this_densityEquation <- approxfun(this_density$x,this_density$y)
+    # 2. then call integrate() function
+    auc <- integrate(this_densityEquation, lower=min(this_column), upper=max(this_column),subdivisions = 2000)$value
+    # and save to vector
+    auc_results[i] <- auc
+    
+  }
+  return(auc_results)
+}
+```
+
+## 1b. take 2 at integral function
+```{r,diff-fnc}
+library(pracma)
+
+calculate_auc <- function(data) {
+  library(stats)
+  
+  num_columns <- ncol(data)
+   #initializes an empty vector to store the area under the curve values for each column.
+  auc_results <- vector("numeric", length = num_columns)
+  
+  for (i in 1:num_columns){
+  # iterate over each column and generate a density plot for each 
+
+    this_column <- data[,i]
+    
+    # remove missing values so R density() fnc can calculate densities
+    this_column <- this_column[!is.na(this_column)]
+    this_density <- density(this_column)
+    
+    # calculate area under curve with definite integral
+    # 1. define a function using interpolation that describes the density curve for the integrate() R function to use
+      this_densityEquation <- approxfun(this_density$x,this_density$y)
+      
+      # Define the Simpson's rule integration function
+simpsons_integration <- function(f, lower, upper, n = 1000) {
+  x <- seq(lower, upper, length.out = n + 1)
+  h <- (upper - lower) / n
+  y <- f(x)
+  
+  even_sum <- sum(y[seq(2, n, 2)])
+  odd_sum <- sum(y[seq(3, n-1, 2)])
+  
+  integral <- (h/3) * (y[1] + y[n+1] + 4 * odd_sum + 2 * even_sum)
+  return(integral)
+}
+
+# Calculate the integral of the function using Simpson's rule
+integral_result <- simpsons_integration(this_densityEquation, lower = 0, upper = 1)
+      
+      #auc <- integrate.quad(this_densityEquation, min(this_column), max(this_column))$value
+      
+    auc_results[i] <- integral_result
+    
+  }
+  return(auc_results)
+}
+```
+## 2a. test density function approxfun() to make sure it makes a density plot similar to actual
+```{r, test-approxfun}
+test_data<-(all_epidermis_lengths_in_microns[,1])[!is.na(all_epidermis_lengths_in_microns[,1])]
+x<-density(test_data)$x
+y<-density(test_data)$y
+this_densityEquation <- approxfun(x,y)
+
+
+# actual plot
+df_set1<-all_epidermis_lengths_in_microns[,1:6]
+long1 <- tidyr::pivot_longer(df_set1, everything())
+targetAnimal_only <- long1[] %>% filter(startsWith(name, "Animal_A."))
+
+actual_densityplot<-ggplot(targetAnimal_only, aes(x = value)) +
+  geom_density(fill = "grey", color="transparent", alpha = 0.5) +
+  theme_minimal()+
+  labs(x = "Micron Value", y = "Frequency")+
+  scale_x_continuous(limits = c(0,80), expand = c(0, 0))+
+  theme(axis.title.x = element_text())
+
+curve(this_densityEquation, from = 0, to = 80, n = 1000, xlab = "x", ylab = "y", main = "Outline of the Function")
+actual_densityplot
+
+# check that my function calculated integral correctly
+(integrate(this_densityEquation, min(test_data), max(test_data))$value) == calculate_auc(all_epidermis_lengths_in_microns)[1]
+```
+## 2b. Continued testing of function
+```{r, testing-cont}
+#standard numeric
+data <- data.frame(
+  col1 = c(1, 2, 3, 4, 5),
+  col2 = c(6, 7, 8, 9, 10),
+  col3 = c(11, 12, 13, 14, 15)
+)
+
+result <- calculate_auc(data)
+print(result)
+# expected 1.683505 1.683505 1.683505
+
+# negative values
+data <- data.frame(
+  col1 = c(-1, -2, -3, -4, -5),
+  col2 = c(-6, -7, -8, -9, -10),
+  col3 = c(-11, -12, -13, -14, -15)
+)
+
+result <- calculate_auc(data)
+print(result)
+# expected 1.683505 1.683505 1.683505
+
+# missing values
+data <- data.frame(
+  col1 = c(1, 2, NA, 4, 5),
+  col2 = c(6, NA, 8, 9, 10),
+  col3 = c(11, 12, 13, NA, 15)
+)
+
+result <- calculate_auc(data)
+print(result)
+# expected [1] 1.683505 1.683505 1.683505
+
+# different density curves
+set.seed(123)
+data <- data.frame(
+  col1 = rnorm(100),
+  col2 = rnorm(100, mean = 2),
+  col3 = rnorm(100, mean = -2)
+)
+
+result <- calculate_auc(data)
+print(result)
+# expected  0.3318891 0.3077189 0.3318891
+```
+
+## 3. Calculate the area under the curve of ach animal's density plots for epidermis and dermis
+```{r, calc-integral}
+epidermis_auc <- calculate_auc(all_epidermis_lengths_in_microns)
+dermis_auc <- calculate_auc(all_dermis_lengths_in_microns)
+```
+
+## 4. Label integrals with animal and treatment
+### 4a. Write funciton to unblind animal identities found in auc df's
+```{r, unblind-fnc}
+add_identity_unblind_column <- function(df) {
+  # Define a lookup table of filename prefixes and corresponding identity_unblind values
+  prefixes <- c("Animal_A.t" = "Exp17_Racemic-MAP_POD7_Mouse14",
+                "Animal_C.t" = "Exp16_D-MAP_POD4_Mouse3",
+                "Animal_D.t" = "Exp15_L-MAP_Mouse3_POD4",
+                "Animal_F.t" = "Exp17_Racemic-MAP_POD7_Mouse11",
+                "Animal_H.t" = "Exp17_Racemic-MAP_POD4_Mouse2",
+                "Animal_I.t" = "Exp15_L-MAP_POD7_Mouse13",
+                "Animal_J.t" = "Exp15_L-MAP_POD4_Mouse2",
+                 "Animal_O.t" = "Exp17_Racemic-MAP_POD7_Mouse13",
+                "Animal_W.t" = "Exp17_Racemic-MAP_POD7_Mouse12",
+                "Animal_Y.t" = "Exp16_D-MAP_POD7_Mouse11",
+                "Animal_Z1." = "Exp17_Racemic-MAP_POD4_Mouse1",
+                "Animal_B.t" = "Exp15_POD7_Mouse11_L-MAP",
+                "Animal_P.t" = "Exp14_POD7_Mouse13_D-MAP",
+                "Animal_R.t" = "Exp16_POD7_Mouse2_D-MAP",
+                "Animal_Z6." = "Exp16_POD7_Mouse11_D-MAP",
+                "Animal_Z8." = "Exp16_POD4_Mouse2_D-MAP",
+                 #"Animal_Z3." = "Exp15_Mouse12_POD7_LMAP",
+                "Animal_Z9." = "Exp17_POD4_Mouse3_Racemic-MAP",
+                "Animal_Z10" = "Exp16_POD4_Mouse1_D-MAP",
+               
+                "Animal_E.t" = "Exp14_No-MAP_POD7_Mouse11",
+                "Animal_K.t" = "Exp14_No-MAP_POD4_Mouse4",
+                "Animal_L.t" = "Exp14_No-MAP_POD7_Mouse12",
+                "Animal_M.t" = "Exp14_No-MAP_POD4_Mouse3",
+                "Animal_U.t" = "Exp14_No-MAP_POD4_Mouse1",
+                "Animal_Z2." = "Exp14_POD7_Mouse14_No-MAP",
+                "Animal_X.t" = "Exp14_No-MAP_POD4_Mouse2",
+                
+                "Animal_G.t" = "Unmanipulated_PepB",
+                "Animal_N.t" = "Unmanip_PepB",
+                "Animal_V.t" = "Unmanip_B6",
+                "Animal_Z4." = "Exp15_POD4_Mouse1",
+                "Animal_Z.t" = "UnmanipB6")
+                
+                
+  
+  # look up the identity_unblind value for each filename in the dataframe
+  found<-vector(length=dim(df)[1])
+  
+  for(i in c(1:length(found))){
+    this_fileName <- df[i,2]
+    
+    prefix <- substr(this_fileName, 1, 10) # Extract the first 10 characters of the filename
+    this_label<-prefixes[prefix] # Look up the corresponding identity_unblind value
+    found[i] <- this_label # and add label to vector
+  }
+  return(found)
+}
+
+```
+
+### 4b. make integral dataframe with animal names and treatment groups 
+```{r, label-integrals}
+# make integral dataframes
+labelled_epidermis_auc <- data.frame(epidermis_auc, colnames(all_epidermis_lengths_in_microns))
+labelled_dermis_auc <- data.frame(dermis_auc, colnames(all_dermis_lengths_in_microns))
+
+# label columns
+colnames(labelled_dermis_auc) <- c("auc", "animal")
+colnames(labelled_epidermis_auc) <- c("auc", "animal")
+
+labelled_dermis_auc$identity_unblind <- add_identity_unblind_column(labelled_dermis_auc)
+labelled_epidermis_auc$identity_unblind <- add_identity_unblind_column(labelled_epidermis_auc)
+```
+
+## 4. Write function to turn integral df's into excel spreadsheet
+one excel document with two sheets
+sheet1: epidermis treatments
+sheet 2: dermis treatments
+```{r, master-fnc-prism}
+# load library for making excel spreadhseet
+library(openxlsx)
+
+
+
+# call all metric functions on data
+
+# write helper function to group animals by one of three treatment groups (MAP, NoMAP, Unmanipulated)
+mutate_map <- function(df){
+  return(mutate(df,treatment = case_when(
+  grepl("L-MAP|D-MAP|Racemic-MAP", identity_unblind) ~ "MAP",
+  grepl("No-MAP", identity_unblind) ~ "NoMAP",
+  grepl("Unmanip", identity_unblind) ~ "Unmanipulated",
+  # assume unmanipulated if none of the above phrases are present
+  !grepl("L-MAP|D-MAP|Racemic-MAP|No-MAP|Unmanip", identity_unblind) ~ "Unmanipulated",
+  TRUE ~ NA_character_
+)))
+}
+
+#Write helper function to filter data for prism
+filter_data_by_phrase <- function(df, phrase) {
+  filtered_df <- df[grep(phrase, df$treatment), ]
+  return(filtered_df)
+}
+
+# set filtering phrases using ^ and $ to signify start and end of phrase for exact search/avoidign under-filtering 
+p1<- "^Unmanipulated$"
+p2<-"^NoMAP$"
+p3<-"^MAP$"
+
+# Wrtie helper fucntion to deal with different lengths for filtered data made for prism
+create_dataframe <- function(vec1, vec2, vec3) {
+  # Get the maximum length of the vectors
+  max_length <- max(length(vec1), length(vec2), length(vec3))
+  
+  # Pad shorter vectors with NAs
+  vec1 <- c(vec1, rep(NA, max_length - length(vec1)))
+  vec2 <- c(vec2, rep(NA, max_length - length(vec2)))
+  vec3 <- c(vec3, rep(NA, max_length - length(vec3)))
+
+  # Create the data frame
+  df <- data.frame(vec1, vec2, vec3)
+  return(df)
+}
+
+master <- function(epidermis_data, dermis_data){
+   # then mutate so any map treatment is grouped
+    data1_with_treatment_groups <- mutate_map(epidermis_data)
+    data2_with_treatment_groups <- mutate_map(dermis_data)
+  
+  
+  # and then make dataframe with a column each of the treatment groups (MAP, NoMAP, Unmanip)
+    data1_sorted<-create_dataframe(
+      (filter_data_by_phrase(data1_with_treatment_groups, p1))$auc,
+      (filter_data_by_phrase(data1_with_treatment_groups, p2))$auc,
+      (filter_data_by_phrase(data1_with_treatment_groups, p3))$auc
+      )
+    data2_sorted<-create_dataframe(
+      (filter_data_by_phrase(data2_with_treatment_groups, p1))$auc,
+      (filter_data_by_phrase(data2_with_treatment_groups, p2))$auc,
+      (filter_data_by_phrase(data2_with_treatment_groups, p3))$auc
+      )
+    
+    #... and change column names
+    colnames(data1_sorted) <- c("Unmanipulated", "NoMAP", "MAP")
+    colnames(data2_sorted) <- c("Unmanipulated", "NoMAP", "MAP")
+  
+    
+    # then make excel spreadsheet where each df occupies one sheet
+    # first Create a workbook object
+    wb <- createWorkbook()
+    
+    # then add data frames to separate sheets
+  addWorksheet(wb, sheetName = "epidermis")
+  addWorksheet(wb, sheetName = "dermis")
+  
+  writeData(wb,"epidermis",data1_sorted)
+  writeData(wb,"dermis",data2_sorted)
+  
+  # finally save the workbook to a file
+saveWorkbook(wb, paste0("../data/230523-prism-integrals-output.xlsx"))
+}
+```
+
+
+## 5a. Use function to turn integral df's into excel spreadsheet
+```{r, use-master-fnc}
+master(labelled_epidermis_auc, labelled_dermis_auc)
+```
+
+
+## 6. save epidermis and dermis micron length csv files for python access
+```{r, make-micron-csv}
+write.csv(all_epidermis_lengths_in_microns, file="../data/all_epidermis_lengths_in_microns.csv")
+write.csv(all_dermis_lengths_in_microns, file="../data/all_dermis_lengths_in_microns.csv")
+```
+
