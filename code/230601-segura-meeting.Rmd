@@ -52,6 +52,13 @@ generate_density_data <- function(data) {
   density_coordinates_list$y <- vector()
   
   # iterate over each column and generate a density plot for each 
+  first_column <- data[,1]
+  first_column <- first_column[!is.na(first_column)]
+  first_density <- density(first_column)  
+  
+  maxX_length = length(first_density$x)
+  maxY_length = length(first_density$y)
+    
   for (i in 1:num_columns){
     this_column <- data[,i]
     #this_column <- data[,1]
@@ -60,10 +67,24 @@ generate_density_data <- function(data) {
     this_column <- this_column[!is.na(this_column)]
     this_density <- density(this_column)
     
+    thisX_length = length(this_density$x)
+    thisY_length = length(this_density$y)
+    
     # then add x values to dataframe in first list element, in the ith column
+    # if(thisX_length>maxX_length){
+    #   #add padding to vectors
+    #   
+    #   #and update max
+    #   maxX_length = thisX_length
+    # }
     density_coordinates_list$x <- cbind(density_coordinates_list$x, this_density$x)
     
     # then add y values to dataframe in second list element
+    # if(thisY_length>maxY_length){
+    #   #add padding to vectors
+    #   #and update max
+    #   maxY_length = thisX_length
+    # }
     density_coordinates_list$y <- cbind(density_coordinates_list$y, this_density$y)
   } 
   
@@ -85,6 +106,40 @@ generate_density_data <- function(data) {
 # test_dermis_density <- generate_density_data(all_dermis_lengths_in_microns)
 # View(test_dermis_density$x)
 # View(test_dermis_density$y)
+all_dermis_densities<-generate_density_data(all_dermis_lengths_in_microns)
+
+
+all_epidermis_densities<-generate_density_data(all_epidermis_lengths_in_microns)
+
+# save densities as excel spreadsheets or csv files and export them
+# then make excel spreadsheet where each df occupies one sheet
+    # first Create a workbook object
+    wb <- createWorkbook()
+    
+    # then add data frames to separate sheets
+  addWorksheet(wb, sheetName = "density-x-coord")
+  addWorksheet(wb, sheetName = "density-y-coord")
+  
+  writeData(wb,"density-x-coord",all_dermis_densities[[1]])
+  writeData(wb,"density-y-coord",all_dermis_densities[[2]])
+  
+  # finally save the workbook to a file
+saveWorkbook(wb, paste0("../data/230608-dermis-density-coordinates.xlsx"))
+
+# do the same thing for epidermis data
+    wb <- createWorkbook()
+    
+    # then add data frames to separate sheets
+  addWorksheet(wb, sheetName = "density-x-coord")
+  addWorksheet(wb, sheetName = "density-y-coord")
+  
+  writeData(wb,"density-x-coord",all_epidermis_densities[[1]])
+  writeData(wb,"density-y-coord",all_epidermis_densities[[2]])
+  
+  # finally save the workbook to a file
+saveWorkbook(wb, paste0("../data/230608-epidermis-density-coordinates.xlsx"))
+
+
 ```
 
 ## 1. write function to calculate integral of density plots
