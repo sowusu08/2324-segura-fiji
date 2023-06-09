@@ -138,8 +138,17 @@ saveWorkbook(wb, paste0("../data/230608-dermis-density-coordinates.xlsx"))
   
   # finally save the workbook to a file
 saveWorkbook(wb, paste0("../data/230608-epidermis-density-coordinates.xlsx"))
+```
 
+##0e. also save density coordinates as csv files for ease of access with python pandas library
+```{r, generate-density-coord-csv}
+# save x coord and y coord data frames as separate data frames for dermis
+write.csv(all_dermis_densities[[1]],file="../data/230608-dermis-density-x-coordinates.csv")
+write.csv(all_dermis_densities[[2]],file="../data/230608-dermis-density-y-coordinates.csv")
 
+#...do the same for epidermis
+write.csv(all_epidermis_densities[[1]],file="../data/230608-epidermis-density-x-coordinates.csv")
+write.csv(all_epidermis_densities[[2]],file="../data/230608-epidermis-density-y-coordinates.csv")
 ```
 
 ## 1. write function to calculate integral of density plots
