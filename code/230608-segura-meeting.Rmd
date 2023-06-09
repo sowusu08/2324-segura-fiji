@@ -274,7 +274,7 @@ create_dataframe <- function(vec1, vec2, vec3) {
   return(df)
 }
 
-master <- function(epidermis_data, dermis_data, file_location){
+master <- function(epidermis_data, dermis_data, col_idx_with_target_data, file_location){
    # then mutate so any map treatment is grouped
     data1_with_treatment_groups <- mutate_map(epidermis_data)
     data2_with_treatment_groups <- mutate_map(dermis_data)
@@ -282,20 +282,23 @@ master <- function(epidermis_data, dermis_data, file_location){
   
   # and then make dataframe with a column each of the treatment groups (MAP, NoMAP, Unmanip)
     data1_sorted<-create_dataframe(
-      (filter_data_by_phrase(data1_with_treatment_groups, p1))$auc,
-      (filter_data_by_phrase(data1_with_treatment_groups, p2))$auc,
-      (filter_data_by_phrase(data1_with_treatment_groups, p3))$auc
+      (filter_data_by_phrase(data1_with_treatment_groups, p1))[,col_idx_with_target_data],
+      (filter_data_by_phrase(data1_with_treatment_groups, p2))[,col_idx_with_target_data],
+      (filter_data_by_phrase(data1_with_treatment_groups, p3))[,col_idx_with_target_data]
       )
     data2_sorted<-create_dataframe(
-      (filter_data_by_phrase(data2_with_treatment_groups, p1))$auc,
-      (filter_data_by_phrase(data2_with_treatment_groups, p2))$auc,
-      (filter_data_by_phrase(data2_with_treatment_groups, p3))$auc
+      (filter_data_by_phrase(data2_with_treatment_groups, p1))[,col_idx_with_target_data],
+      (filter_data_by_phrase(data2_with_treatment_groups, p2))[,col_idx_with_target_data],
+      (filter_data_by_phrase(data2_with_treatment_groups, p3))[,col_idx_with_target_data]
       )
     
     #... and change column names
     colnames(data1_sorted) <- c("Unmanipulated", "NoMAP", "MAP")
     colnames(data2_sorted) <- c("Unmanipulated", "NoMAP", "MAP")
   
+    
+    # View(data1_sorted)
+    # View(data2_sorted)
     
     # then make excel spreadsheet where each df occupies one sheet
     # first Create a workbook object
@@ -326,7 +329,7 @@ epidermis_peak_counts$identity_unblind <- add_identity_unblind_column(epidermis_
 
 ## 3b. then prepare peak count data for prism (by making excel spreadsheets)
 ```{r, peak-count-prism-data}
-master(epidermis_peak_counts, dermis_peak_counts, "../data/230608-prism-peak-counts-output.xlsx")
+master(epidermis_peak_counts, dermis_peak_counts, 1, "../data/230608-prism-peak-counts-output.xlsx")
 ```
 
 ## 1. write function to calculate integral of density plots
