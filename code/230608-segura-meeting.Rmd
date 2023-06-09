@@ -168,6 +168,72 @@ colnames(dermis_peak_counts) <- "number_of_peaks"
 epidermis_peak_counts
 dermis_peak_counts
 ```
+## 2. write funciton to unblind animals
+```{r, unblind-animals-fnc}
+add_identity_unblind_column <- function(df) {
+  # Define a lookup table of filename prefixes and corresponding identity_unblind values
+  prefixes <- c("Animal_A.t" = "Exp17_Racemic-MAP_POD7_Mouse14",
+                "Animal_C.t" = "Exp16_D-MAP_POD4_Mouse3",
+                "Animal_D.t" = "Exp15_L-MAP_Mouse3_POD4",
+                "Animal_F.t" = "Exp17_Racemic-MAP_POD7_Mouse11",
+                "Animal_H.t" = "Exp17_Racemic-MAP_POD4_Mouse2",
+                "Animal_I.t" = "Exp15_L-MAP_POD7_Mouse13",
+                "Animal_J.t" = "Exp15_L-MAP_POD4_Mouse2",
+                 "Animal_O.t" = "Exp17_Racemic-MAP_POD7_Mouse13",
+                "Animal_W.t" = "Exp17_Racemic-MAP_POD7_Mouse12",
+                "Animal_Y.t" = "Exp16_D-MAP_POD7_Mouse11",
+                "Animal_Z1." = "Exp17_Racemic-MAP_POD4_Mouse1",
+                "Animal_B.t" = "Exp15_POD7_Mouse11_L-MAP",
+                "Animal_P.t" = "Exp14_POD7_Mouse13_D-MAP",
+                "Animal_R.t" = "Exp16_POD7_Mouse2_D-MAP",
+                "Animal_Z6." = "Exp16_POD7_Mouse11_D-MAP",
+                "Animal_Z8." = "Exp16_POD4_Mouse2_D-MAP",
+                 #"Animal_Z3." = "Exp15_Mouse12_POD7_LMAP",
+                "Animal_Z9." = "Exp17_POD4_Mouse3_Racemic-MAP",
+                "Animal_Z10" = "Exp16_POD4_Mouse1_D-MAP",
+               
+                "Animal_E.t" = "Exp14_No-MAP_POD7_Mouse11",
+                "Animal_K.t" = "Exp14_No-MAP_POD4_Mouse4",
+                "Animal_L.t" = "Exp14_No-MAP_POD7_Mouse12",
+                "Animal_M.t" = "Exp14_No-MAP_POD4_Mouse3",
+                "Animal_U.t" = "Exp14_No-MAP_POD4_Mouse1",
+                "Animal_Z2." = "Exp14_POD7_Mouse14_No-MAP",
+                "Animal_X.t" = "Exp14_No-MAP_POD4_Mouse2",
+                
+                "Animal_G.t" = "Unmanipulated_PepB",
+                "Animal_N.t" = "Unmanip_PepB",
+                "Animal_V.t" = "Unmanip_B6",
+                "Animal_Z4." = "Exp15_POD4_Mouse1",
+                "Animal_Z.t" = "UnmanipB6")
+                
+                
+  
+  # look up the identity_unblind value for each filename in the dataframe
+  found<-vector(length=dim(df)[1])
+  
+  for(i in c(1:length(found))){
+    this_fileName <- df[i,2]
+    
+    prefix <- substr(this_fileName, 1, 10) # Extract the first 10 characters of the filename
+    this_label<-prefixes[prefix] # Look up the corresponding identity_unblind value
+    found[i] <- this_label # and add label to vector
+  }
+  return(found)
+}
+```
+
+## 3. unblind animal peak counts
+```{r, unblind-peak-counts}
+# add column that is the animal name
+dermis_peak_counts$filename <- colnames(dermis_peak_indices)
+epidermis_peak_counts$filename <- colnames(epidermis_peak_indices)
+
+# then add unblind column
+dermis_peak_counts$identity_unblind <- add_identity_unblind_column(dermis_peak_counts)
+epidermis_peak_counts$identity_unblind <- add_identity_unblind_column(epidermis_peak_counts)
+
+
+```
 
 ## 1. write function to calculate integral of density plots
 ```{r, fnc-integral}
