@@ -38,7 +38,7 @@ all_dermis_lengths_in_microns <- all_dermis_micron
 all_epidermis_lengths_in_microns <- all_epidermis_micron
 ```
 
-## Od. Generate density dataframes for each animal
+## Od. Generate density dataframes for each animal - DO NOT RE-RUN
 ```{r, interpolation}
 # use interpolate to make dataframe with points that make outline of density plots
 generate_density_data <- function(data) {
@@ -140,7 +140,7 @@ saveWorkbook(wb, paste0("../data/230608-dermis-density-coordinates.xlsx"))
 saveWorkbook(wb, paste0("../data/230608-epidermis-density-coordinates.xlsx"))
 ```
 
-##0e. also save density coordinates as csv files for ease of access with python pandas library
+##0e. also save density coordinates as csv files for ease of access with python pandas library DO NOT RE-RUN
 ```{r, generate-density-coord-csv}
 # save x coord and y coord data frames as separate data frames for dermis
 write.csv(all_dermis_densities[[1]],file="../data/230608-dermis-density-x-coordinates.csv")
@@ -168,7 +168,9 @@ colnames(dermis_peak_counts) <- "number_of_peaks"
 epidermis_peak_counts
 dermis_peak_counts
 ```
-## 2. write funciton to unblind animals
+## 2. write necessary funcitons
+
+## 2a. write funciton to unblind animals
 ```{r, unblind-animals-fnc}
 add_identity_unblind_column <- function(df) {
   # Define a lookup table of filename prefixes and corresponding identity_unblind values
@@ -222,7 +224,96 @@ add_identity_unblind_column <- function(df) {
 }
 ```
 
-## 3. unblind animal peak counts
+## 2b. Write funciton to prepare unblinded data in excel for prism 
+one excel document with two sheets
+sheet1: epidermis treatments
+sheet 2: dermis treatments
+```{r, master-fnc-prism}
+# load library for making excel spreadhseet
+library(openxlsx)
+
+
+
+# call all metric functions on data
+
+# write helper function to group animals by one of three treatment groups (MAP, NoMAP, Unmanipulated)
+mutate_map <- function(df){
+  return(mutate(df,treatment = case_when(
+  grepl("L-MAP|D-MAP|Racemic-MAP", identity_unblind) ~ "MAP",
+  grepl("No-MAP", identity_unblind) ~ "NoMAP",
+  grepl("Unmanip", identity_unblind) ~ "Unmanipulated",
+  # assume unmanipulated if none of the above phrases are present
+  !grepl("L-MAP|D-MAP|Racemic-MAP|No-MAP|Unmanip", identity_unblind) ~ "Unmanipulated",
+  TRUE ~ NA_character_
+)))
+}
+
+#Write helper function to filter data for prism
+filter_data_by_phrase <- function(df, phrase) {
+  filtered_df <- df[grep(phrase, df$treatment), ]
+  return(filtered_df)
+}
+
+# set filtering phrases using ^ and $ to signify start and end of phrase for exact search/avoidign under-filtering 
+p1<- "^Unmanipulated$"
+p2<-"^NoMAP$"
+p3<-"^MAP$"
+
+# Wrtie helper fucntion to deal with different lengths for filtered data made for prism
+create_dataframe <- function(vec1, vec2, vec3) {
+  # Get the maximum length of the vectors
+  max_length <- max(length(vec1), length(vec2), length(vec3))
+  
+  # Pad shorter vectors with NAs
+  vec1 <- c(vec1, rep(NA, max_length - length(vec1)))
+  vec2 <- c(vec2, rep(NA, max_length - length(vec2)))
+  vec3 <- c(vec3, rep(NA, max_length - length(vec3)))
+
+  # Create the data frame
+  df <- data.frame(vec1, vec2, vec3)
+  return(df)
+}
+
+master <- function(epidermis_data, dermis_data, file_location){
+   # then mutate so any map treatment is grouped
+    data1_with_treatment_groups <- mutate_map(epidermis_data)
+    data2_with_treatment_groups <- mutate_map(dermis_data)
+  
+  
+  # and then make dataframe with a column each of the treatment groups (MAP, NoMAP, Unmanip)
+    data1_sorted<-create_dataframe(
+      (filter_data_by_phrase(data1_with_treatment_groups, p1))$auc,
+      (filter_data_by_phrase(data1_with_treatment_groups, p2))$auc,
+      (filter_data_by_phrase(data1_with_treatment_groups, p3))$auc
+      )
+    data2_sorted<-create_dataframe(
+      (filter_data_by_phrase(data2_with_treatment_groups, p1))$auc,
+      (filter_data_by_phrase(data2_with_treatment_groups, p2))$auc,
+      (filter_data_by_phrase(data2_with_treatment_groups, p3))$auc
+      )
+    
+    #... and change column names
+    colnames(data1_sorted) <- c("Unmanipulated", "NoMAP", "MAP")
+    colnames(data2_sorted) <- c("Unmanipulated", "NoMAP", "MAP")
+  
+    
+    # then make excel spreadsheet where each df occupies one sheet
+    # first Create a workbook object
+    wb <- createWorkbook()
+    
+    # then add data frames to separate sheets
+  addWorksheet(wb, sheetName = "epidermis")
+  addWorksheet(wb, sheetName = "dermis")
+  
+  writeData(wb,"epidermis",data1_sorted)
+  writeData(wb,"dermis",data2_sorted)
+  
+  # finally save the workbook to a file
+saveWorkbook(wb, file_location)
+}
+```
+
+## 3a. unblind animal peak counts
 ```{r, unblind-peak-counts}
 # add column that is the animal name
 dermis_peak_counts$filename <- colnames(dermis_peak_indices)
@@ -231,8 +322,11 @@ epidermis_peak_counts$filename <- colnames(epidermis_peak_indices)
 # then add unblind column
 dermis_peak_counts$identity_unblind <- add_identity_unblind_column(dermis_peak_counts)
 epidermis_peak_counts$identity_unblind <- add_identity_unblind_column(epidermis_peak_counts)
+```
 
-
+## 3b. then prepare peak count data for prism (by making excel spreadsheets)
+```{r, peak-count-prism-data}
+master(epidermis_peak_counts, dermis_peak_counts, "../data/230608-prism-peak-counts-output.xlsx")
 ```
 
 ## 1. write function to calculate integral of density plots
