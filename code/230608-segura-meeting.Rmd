@@ -332,6 +332,97 @@ epidermis_peak_counts$identity_unblind <- add_identity_unblind_column(epidermis_
 master(epidermis_peak_counts, dermis_peak_counts, 1, "../data/230608-prism-peak-counts-output.xlsx")
 ```
 
+## 4. Calculate integral for one animal using rectangle method
+## 4a. First use ggplot to make histograms for all data and confirm binwidth=2 is suitable baseline
+
+```{r, dertermine-bindwidth-for-lengths}
+# comment out accordign to if want to vizualize dermis or epidermis
+# df_set1<-all_dermis_lengths_in_microns[,1:6]
+# df_set2<-all_dermis_lengths_in_microns[,7:12]
+# df_set3<-all_dermis_lengths_in_microns[,13:18]
+# df_set4<-all_dermis_lengths_in_microns[,19:24]
+# df_set5<-all_dermis_lengths_in_microns[,25:30]
+
+df_set1<-all_epidermis_lengths_in_microns[,1:6]
+df_set2<-all_epidermis_lengths_in_microns[,7:12]
+df_set3<-all_epidermis_lengths_in_microns[,13:18]
+df_set4<-all_epidermis_lengths_in_microns[,19:24]
+df_set5<-all_epidermis_lengths_in_microns[,25:30]
+# set y-axis range
+x_range <- c(0,275)
+
+# convert data to long format using tidyr::pivot_longer()
+long1 <- tidyr::pivot_longer(df_set1, everything())
+long2 <- tidyr::pivot_longer(df_set2, everything())
+long3 <- tidyr::pivot_longer(df_set3, everything())
+long4 <- tidyr::pivot_longer(df_set4, everything())
+long5 <- tidyr::pivot_longer(df_set5, everything())
+# set y-axis range
+x_range <- c(0,150)
+
+# plot using ggplot and facet_wrap()
+ggplot(long1[], aes(x = value)) +
+  geom_histogram(color="black", fill="white", binwidth = 2) +
+  facet_wrap(~ name, scales = "fixed") +
+  labs(x = "Micron Value", y = "Frequency")+
+  scale_x_continuous(limits = x_range, expand = c(0, 0))+
+  theme(axis.title.x = element_text())
+
+ggplot(long2[], aes(x = value)) +
+  geom_histogram(color="black", fill="white", binwidth = 2) +
+  facet_wrap(~ name, scales = "fixed") +
+  labs(x = "Micron Value", y = "Frequency")+
+  scale_x_continuous(limits = x_range, expand = c(0, 0))+
+  theme(axis.title.x = element_text())
+
+ggplot(long3[], aes(x = value)) +
+  geom_histogram(color="black", fill="white", binwidth = 2) +
+  facet_wrap(~ name, scales = "fixed") +
+  labs(x = "Micron Value", y = "Frequency")+
+  scale_x_continuous(limits = x_range, expand = c(0, 0))+
+  theme(axis.title.x = element_text())
+
+ggplot(long4[], aes(x = value)) +
+  geom_histogram(color="black", fill="white", binwidth = 2) +
+  facet_wrap(~ name, scales = "fixed") +
+  labs(x = "Micron Value", y = "Frequency")+
+  scale_x_continuous(limits = x_range, expand = c(0, 0))+
+  theme(axis.title.x = element_text())
+
+ggplot(long5[], aes(x = value)) +
+  geom_histogram(color="black", fill="white", binwidth = 2) +
+  facet_wrap(~ name, scales = "fixed") +
+  labs(x = "Micron Value", y = "Frequency")+
+  scale_x_continuous(limits = x_range, expand = c(0, 0))+
+  theme(axis.title.x = element_text()) 
+```
+
+##4b. then write funciton to calculate integral taking into account "optimal" binwidth (of 2)
+```{r, get-hist-bin-counts}
+rectangle_integral <- function(animal_micron_lengths_vector, binwidth=2){
+  values <- data.frame(animal_micron_lengths_vector)
+  
+  hist_plot <- ggplot(values, aes(x = values)) +
+    geom_histogram()
+
+  # Build the plot
+  built_plot <- ggplot_build(hist_plot)
+  
+  # Extract the counts from the plot data
+  counts <- built_plot$data[[1]]$count
+  
+  # then calculate itegral by multiplying every number in count vector by binwidth
+  integral <- sum(binwidth*counts)
+  
+  # return integral
+  return(integral)
+}
+
+# then use lapply to apply it to every animals
+
+```
+
+
 ## 1. write function to calculate integral of density plots
 ```{r, fnc-integral}
 # this function takes a data frame 'data' where each column corresponds to a specific histology section and each row contains epidermis or dermis lengths in microns for a particular histology section. For example:
